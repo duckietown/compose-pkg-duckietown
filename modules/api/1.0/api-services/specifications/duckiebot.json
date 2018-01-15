@@ -1,10 +1,8 @@
 {
     "details" : "Provides the tools for managing Duckiebots",
-    "enabled" : true,
 	"actions" : {
         "exists" : {
             "details" : "Check whether a Duckiebot exists",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
@@ -35,7 +33,6 @@
         },
         "status" : {
             "details" : "Provides information about the current status of a Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
@@ -66,7 +63,6 @@
         },
         "authenticate" : {
             "details" : "Authenticate the given user on the Duckiebot via SSH connection",
-            "enabled" : true,
             "access_level" : [
                 "user"
             ],
@@ -103,7 +99,6 @@
         },
         "associate" : {
             "details" : "Associate the given Duckiebot with the user currently logged in",
-            "enabled" : true,
             "access_level" : [
                 "candidate"
             ],
@@ -140,7 +135,6 @@
         },
         "release" : {
             "details" : "Releases the ownership of the given Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
@@ -171,7 +165,6 @@
         },
         "owner" : {
             "details" : "Provides information about the owner of a Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor"
@@ -197,7 +190,6 @@
         },
         "network" : {
             "details" : "Provides information about the network configuration of a Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
@@ -257,7 +249,6 @@
         },
         "storage" : {
             "details" : "Provides information about the disk status of a Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
@@ -313,7 +304,6 @@
         },
         "configuration" : {
             "details" : "Provides information about the current configuration of a Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
@@ -358,7 +348,6 @@
         },
         "ros" : {
             "details" : "Provides information about ROS processes running on the Duckiebot",
-            "enabled" : true,
             "access_level" : [
                 "administrator",
                 "supervisor",
