@@ -3,7 +3,7 @@
 # @Date:   Sunday, December 31st 2017
 # @Email:  afdaniele@ttic.edu
 # @Last modified by:   afdaniele
-# @Last modified time: Saturday, January 13th 2018
+# @Last modified time: Monday, January 15th 2018
 
 
 
@@ -569,20 +569,10 @@ class Duckietown{
 			$res['data'] = sprintf('The Duckiebot `%s` is already linked to a user account.', $bot_name);
 			return $res;
 		}
-		// check whether the user exists, if it does not, create a new one
+		// check whether the user exists, if it does not, return an error
 		$user_exists = Core::userExists($username);
 		if( !$user_exists ){
-			$user_file = sprintf( __DIR__.'/../users/accounts/%s.json', $username );
-			$user_info = new JsonDB( $user_file );
-			// copy info to JSON
-			foreach( Core::getUserLogged() as $key => $val ){
-				$user_info.set( $key, $val );
-			}
-			$user_info.set( 'role', 'user' );
-			$res2 = $user_info.commit();
-			if( !$res2['success'] ){
-				return $res2;
-			}
+			$res['data'] = sprintf("The user `%s` was not found", $username);
 		}
 		// link Duckiebot to user account
 		$associations_dir = __DIR__."/../users/associations";
