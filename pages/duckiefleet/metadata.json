@@ -4,8 +4,8 @@
     "menu_entry" : {
         "order" : 1,
         "icon" : {
-            "type" : "fa",
-            "name" : "cubes"
+            "class" : "fa",
+            "name" : "road"
         },
         "responsive" : {
             "priority" : -10

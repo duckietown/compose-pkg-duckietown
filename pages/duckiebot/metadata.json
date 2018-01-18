@@ -4,7 +4,7 @@
     "menu_entry" : {
         "order" : 1,
         "icon" : {
-            "type" : "fa",
+            "class" : "fa",
             "name" : "car"
         },
         "responsive" : {

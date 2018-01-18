@@ -3,7 +3,7 @@
 # @Date:   Tuesday, January 9th 2018
 # @Email:  afdaniele@ttic.edu
 # @Last modified by:   afdaniele
-# @Last modified time: Wednesday, January 10th 2018
+# @Last modified time: Monday, January 15th 2018
 
 
 require_once $GLOBALS['__PACKAGES__DIR__'].'duckietown/Duckietown.php';
@@ -31,7 +31,7 @@ $features = array(
 	'keywords' => array(
 		'type' => 'text',
 		'default' => null,
-		'placeholder' => 'es. Quack'
+		'placeholder' => 'e.g., Quack'
 	)
 );
 
