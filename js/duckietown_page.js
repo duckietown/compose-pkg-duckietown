@@ -3,7 +3,7 @@
  * @Date:   Monday, January 15th 2018
  * @Email:  afdaniele@ttic.edu
  * @Last modified by:   afdaniele
- * @Last modified time: Tuesday, January 16th 2018
+ * @Last modified time: Wednesday, January 17th 2018
  */
 
  function allowDrop(ev) {
@@ -12,25 +12,23 @@
 
  function drag(ev) {
      ev.dataTransfer.setData("text", ev.target.id);
-     console.log( ev );
  }
 
  function drop(ev) {
      ev.preventDefault();
      var data = ev.dataTransfer.getData("text");
-     ev.target.appendChild(document.getElementById(data));
-     $("#"+ev.target.id).css('border-color', 'gray');
+     ev.target.appendChild( document.getElementById(data).cloneNode(true) );
+     $("#"+ev.target.id).css('border-color', 'black');
  }
-
 
  function dragEnter(ev){
      ev.preventDefault();
-     $("#"+ev.target.id).css('border-color', 'yellow');
+     $("#"+ev.target.id).css('background-color', '#fec612');
  }
 
  function dragLeave(ev){
      ev.preventDefault();
-     $("#"+ev.target.id).css('border-color', 'gray');
+     $("#"+ev.target.id).css('background-color', 'black');
  }
 
 

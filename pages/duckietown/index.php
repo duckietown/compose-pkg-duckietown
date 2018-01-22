@@ -4,23 +4,34 @@
 # @Date:   Tuesday, January 9th 2018
 # @Email:  afdaniele@ttic.edu
 # @Last modified by:   afdaniele
-# @Last modified time: Wednesday, January 17th 2018
-
+# @Last modified time: Saturday, January 20th 2018
 
 
 require_once $GLOBALS['__PACKAGES__DIR__'].'duckietown/Duckietown.php';
 use \system\packages\duckietown\Duckietown as Duckietown;
 
+?>
 
+
+<style type="text/css">
+
+body > .container{
+	/* TODO: compute this based on the size of the grid + 2*toolbox_width + some padding */
+    min-width: 1000px;
+}
+
+</style>
+
+<?php
 $tiles = [
-	"3way_tile_plain.svg",
-	"4way_tile_plain.svg",
-	"curve_tile_plain.svg",
-	"grass_tile_plain.svg",
-	"parking_lot_tile_plain.svg",
-	"straight_2stop_tile_plain.svg",
-	"straight_stop_tile_plain.svg",
-	"straight_tile_plain.svg"
+	"3way_tile_plain.svg" => ["0", "90", "180", "270"],
+	"4way_tile_plain.svg" => ["0"],
+	"curve_tile_plain.svg" => ["0", "90", "180", "270"],
+	"grass_tile_plain.svg" => ["0"],
+	"parking_lot_tile_plain.svg" => ["0"],
+	"straight_2stop_tile_plain.svg" => ["0", "90"],
+	"straight_stop_tile_plain.svg" => ["0", "90", "180", "270"],
+	"straight_tile_plain.svg" => ["0", "90"]
 ];
 
 ?>
@@ -33,7 +44,7 @@ $tiles = [
 
 <div style="width:100%; margin:auto">
 
-	<table style="width:100%; border-bottom:1px solid #ddd; margin-bottom:32px">
+	<table style="width:970px; margin:auto; border-bottom:1px solid #ddd; margin-bottom:32px">
 
 		<tr>
 			<td style="width:50%">
@@ -43,13 +54,88 @@ $tiles = [
 
 	</table>
 
-	<div id="tiles_toolbox">
-			<?php foreach ($tiles as $tile): ?>
-				<img class="tile" id="<?php echo $tile ?>" src="<?php echo sprintf("%simage.php?package=%s&image=%s",
-					\system\classes\Configuration::$BASE_URL, 'duckietown', $tile); ?>"
-					draggable="true" ondragstart="drag(event)" />
-			<?php endforeach; ?>
-	</div>
+
+
+	<table style="width:100%">
+		<tr>
+
+			<td class="side_toolbox_container side_toolbox_container_left">
+
+				<div class="tiles_toolbox_left_top">
+						<?php
+						foreach ($tiles as $tile => $tile_orientations):
+							foreach ($tile_orientations as $orientation): ?>
+								<img class="tile tile_<?php echo $orientation ?>"
+									id="<?php echo $tile."_".$orientation ?>"
+									src="<?php echo sprintf("%simage.php?package=%s&image=%s",
+										\system\classes\Configuration::$BASE_URL, 'duckietown', $tile); ?>"
+									draggable="true" ondragstart="drag(event)" />
+							<?php
+							endforeach;
+						endforeach;
+						?>
+				</div>
+
+				<div class="tiles_toolbox_left_bottom">
+					<img src="<?php echo sprintf("%simage.php?package=%s&image=%s",
+						\system\classes\Configuration::$BASE_URL, 'duckietown', 'trashcan.png'); ?>"
+						 />
+				</div>
+
+			</td>
+
+
+			<td class="text-center" style="width:100%">
+
+				<?php
+				$rows = 6;
+				$columns = 5;
+				?>
+
+				<table class="town_canvas">
+				<?php
+				for ($i = 0; $i < $rows; $i++) {
+					echo "<tr>";
+					for ($j = 0; $j < $columns; $j++) {
+						?>
+						<td>
+							<div id="slot_<?php echo $i."_".$j ?>"
+								class="tile_container"
+								data-row="<?php echo $i ?>"
+								data-column="<?php echo $j ?>"
+								ondrop="drop(event)"
+								ondragover="allowDrop(event)"
+								ondragenter="dragEnter(event)"
+								ondragleave="dragLeave(event)">
+							</div>
+						</td>
+						<?php
+					}
+					echo "</tr>";
+				}
+				?>
+				</table>
+
+			</td>
+
+
+			<td class="side_toolbox_container side_toolbox_container_right">
+
+				<div class="tiles_toolbox_right">
+
+				</div>
+
+			</td>
+
+		</tr>
+	</table>
+
+
+
+
+
+
+
 
 	<!-- <div id="images">
 		<div id="drag4" draggable="true" ondragstart="drag(event)"></div>
@@ -63,7 +149,9 @@ $tiles = [
 		<div id="drag12" draggable="true" ondragstart="drag(event)"></div>
 	</div> -->
 
-	<div id="text">
+
+
+	<!-- <div id="text">
 		<div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></div>
 		<div id="div2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 		<div id="div3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
@@ -73,7 +161,7 @@ $tiles = [
 		<div id="div7" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 		<div id="div8" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 		<div id="div9" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	</div>
+	</div> -->
 
 </div>
 
