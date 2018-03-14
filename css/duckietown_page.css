@@ -3,12 +3,14 @@
  * @Date:   Monday, January 15th 2018
  * @Email:  afdaniele@ttic.edu
  * @Last modified by:   afdaniele
- * @Last modified time: Thursday, January 18th 2018
+ * @Last modified time: Friday, February 9th 2018
  */
 
 
 body > .container{
     width: 100% !important;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .side_toolbox_container,
@@ -24,11 +26,11 @@ body > .container{
 }
 
 .side_toolbox_container_left{
-    border-left: 4px solid;
+    border-left: 8px solid;
 }
 
  .tile,
- .tile_container{
+ .tile_grid_container{
      width: 100px;
      height: 100px;
  }
@@ -69,9 +71,11 @@ body > .container{
     height: 120px;
     border-bottom-right-radius: 6px;
     border: 2px solid;
-    background-color: #f3eeee;
     text-align: center;
     vertical-align: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 70px;
  }
 
  .tiles_toolbox_left_bottom > img{
@@ -81,12 +85,18 @@ body > .container{
 
  .tiles_toolbox_left_top .tile{
      margin: 20px;
+     z-index: 1 !important;
  }
 
- .town_canvas{
-     background-color: black;
+ #town_canvas{
+     background-color: #777;
      display: inline-block;
      margin: 0 40px;
+     border: 2px solid black;
+ }
+
+ .grid_cell_hover{
+     background-color: #fec612;
  }
 
 
@@ -126,4 +136,9 @@ body > .container{
    width: 200px;
    display: inline-block;
    background-color: yellow;
+ }
+
+
+ #drag_to_delete{
+
  }

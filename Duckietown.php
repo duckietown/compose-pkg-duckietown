@@ -468,7 +468,7 @@ class Duckietown{
 
 
 	public static function getDuckiebotLinkedToUser( $username ){
-		$associations_dir = __DIR__."/../users/associations/";
+		$associations_dir = __DIR__."/data/private/duckiebot.owner/";
 		// create command
 		$cmd = sprintf("ls -l %s | awk '{print $9}' | grep -E '^%s.[a-z]+$' | cat", $associations_dir, $username);
 		// execute the command and parse the output
@@ -491,7 +491,7 @@ class Duckietown{
 	}//getDuckiebotLinkedTo
 
 	public static function getUserLinkedToDuckiebot( $bot_name ){
-		$associations_dir = __DIR__."/../users/associations/";
+		$associations_dir = __DIR__."/data/private/duckiebot.owner/";
 		// create command
 		$cmd = sprintf("ls -l %s | awk '{print $9}' | grep -E '^[0-9]+.%s$' | cat", $associations_dir, $bot_name);
 		// execute the command and parse the output
@@ -575,7 +575,7 @@ class Duckietown{
 			$res['data'] = sprintf("The user `%s` was not found", $username);
 		}
 		// link Duckiebot to user account
-		$associations_dir = __DIR__."/../users/associations";
+		$associations_dir = __DIR__."/data/private/duckiebot.owner/";
 		// create command
 		$cmd = sprintf("touch %s/%s.%s", $associations_dir, $username, $bot_name);
 		// execute the command and parse the output
@@ -602,7 +602,7 @@ class Duckietown{
 		}
 		$username = $res['data'];
 		// remove the association flag
-		$associations_dir = __DIR__."/../users/associations";
+		$associations_dir = __DIR__."/data/private/duckiebot.owner/";
 		// create command
 		$cmd = sprintf("rm -f %s/%s.%s", $associations_dir, $username, $bot_name);
 		// execute the command and parse the output
