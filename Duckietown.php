@@ -26,6 +26,18 @@ class Duckietown{
 
 	private static $initialized = false;
 
+	private static $DUCKIEBOT_W_CONFIG_DEVICE_VID_PID_LIST = [
+		'7392:b822'
+	];
+
+	private static $DUCKIEBOT_D_CONFIG_DEVICE_VID_PID_LIST = [
+		'0781:5583',
+		'090c:1000'
+	];
+
+	private static $WHAT_THE_DUCK_TESTS_DATA_PATH = "/tmp";
+
+
 	// disable the constructor
 	private function __construct() {}
 
@@ -102,7 +114,9 @@ class Duckietown{
 
 
 	public static function getDuckiebotsCurrentBranch(){
-		exec( "ls -l '".Configuration::$DUCKIEFLEET_PATH.'/robots/'.Configuration::$DUCKIEFLEET_BRANCH."' | awk '{print $9}' | grep -E '[a-zA-Z0-9]*.robot.yaml' | sed -e 's/\.robot.yaml$//'", $duckiebots, $exit_code );
+		$DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown', '/tmp');
+		$DUCKIEFLEET_BRANCH = Core::getSetting('duckiefleet_branch', 'duckietown', '');
+		exec( "ls -l '".$DUCKIEFLEET_PATH.'/robots/'.$DUCKIEFLEET_BRANCH."' | awk '{print $9}' | grep -E '[a-zA-Z0-9]*.robot.yaml' | sed -e 's/\.robot.yaml$//'", $duckiebots, $exit_code );
 		//
 		return $duckiebots;
 	}//getDuckiebotsCurrentBranch
@@ -113,7 +127,9 @@ class Duckietown{
 			return array('success' => false, 'data' => 'Duckiebot not found');
 		}
 		//
-		$yaml_file = Configuration::$DUCKIEFLEET_PATH.'/robots/'.Configuration::$DUCKIEFLEET_BRANCH.'/'.$bot_name.'.robot.yaml';
+		$DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown', '/tmp');
+		$DUCKIEFLEET_BRANCH = Core::getSetting('duckiefleet_branch', 'duckietown', '');
+		$yaml_file = $DUCKIEFLEET_PATH.'/robots/'.$DUCKIEFLEET_BRANCH.'/'.$bot_name.'.robot.yaml';
 		$yaml_file = str_replace('//', '/', $yaml_file);
 		if( !file_exists($yaml_file) ){
 			return null;
@@ -145,7 +161,9 @@ class Duckietown{
 				return $res;
 			}
 			// authenticate SSH session
-			$auth = @ssh2_auth_password($ssh, Configuration::$DUCKIEBOT_DEFAULT_USERNAME, Configuration::$DUCKIEBOT_DEFAULT_PASSWORD);
+			$DUCKIEBOT_DEFAULT_USERNAME = Core::getSetting('duckiebot_username');
+			$DUCKIEBOT_DEFAULT_PASSWORD = Core::getSetting('duckiebot_password');
+			$auth = @ssh2_auth_password($ssh, $DUCKIEBOT_DEFAULT_USERNAME, $DUCKIEBOT_DEFAULT_PASSWORD);
 			if ( $auth === false ) {
 				$res['data'] = 'Authentication failed';
 				return $res;
@@ -174,7 +192,8 @@ class Duckietown{
 
 
 	private static function getROScommand( $command ){
-		return sprintf('source %s/setup.bash; %s', Configuration::$DUCKIEBOT_ROS_PATH, $command);
+		$DUCKIEBOT_ROS_PATH = Core::getSetting('duckiebot_ros_path', 'duckietown');
+		return sprintf('source %s/setup.bash; %s', $DUCKIEBOT_ROS_PATH, $command);
 	}//getROScommand
 
 
@@ -192,8 +211,9 @@ class Duckietown{
 		}
 		// check whether the username provided matches the default backdoor username used by the platform
 		if( $protectDefaultUser ){
-			if( strcasecmp( trim($username), trim(Configuration::$DUCKIEBOT_DEFAULT_USERNAME) ) == 0 ){
-				$res['data'] = sprintf('The user `%s` is protected. Create your own user to continue.', Configuration::$DUCKIEBOT_DEFAULT_USERNAME);
+			$DUCKIEBOT_DEFAULT_USERNAME = Core::getSetting('duckiebot_username', 'duckietown');
+			if( strcasecmp( trim($username), trim($DUCKIEBOT_DEFAULT_USERNAME) ) == 0 ){
+				$res['data'] = sprintf('The user `%s` is protected. Create your own user to continue.', $DUCKIEBOT_DEFAULT_USERNAME);
 				return $res;
 			}
 		}
@@ -326,14 +346,14 @@ class Duckietown{
 		$res = self::execCommandOnDuckiebot( $bot_name, $command );
 		if( $res['success'] ){
 			// search for the Edimax (w configuration)
-			$device_ids = implode( "|", Configuration::$DUCKIEBOT_W_CONFIG_DEVICE_VID_PID_LIST );
+			$device_ids = implode( "|", Duckietown::$DUCKIEBOT_W_CONFIG_DEVICE_VID_PID_LIST );
 			$regex = sprintf("/.* ID (%s) .*/", $device_ids);
 			$wireless_device_id = Utils::regex_extract_group($res['data'], $regex, 1);
 			if( !is_null($wireless_device_id) ){
 				$configuration['w'] = true;
 			}
 			// search for the USB Drive (d configuration)
-			$device_ids = implode( "|", Configuration::$DUCKIEBOT_D_CONFIG_DEVICE_VID_PID_LIST );
+			$device_ids = implode( "|", Duckietown::$DUCKIEBOT_D_CONFIG_DEVICE_VID_PID_LIST );
 			$regex = sprintf("/.* ID (%s) .*/", $device_ids);
 			$storage_device_id = Utils::regex_extract_group($res['data'], $regex, 1);
 			if( !is_null($storage_device_id) ){
@@ -456,7 +476,7 @@ class Duckietown{
 			'laptops' => array() //TODO: support for multiple laptops
 		);
 		// check if we have the WTD for the Duckiebot results locally
-		$duckiebot_wtd_test_filepath = sprintf( '%s/%s.wtd.json', Configuration::$WHAT_THE_DUCK_TESTS_DATA_PATH, $bot_name );
+		$duckiebot_wtd_test_filepath = sprintf( '%s/%s.wtd.json', Duckietown::$WHAT_THE_DUCK_TESTS_DATA_PATH, $bot_name );
 		if( file_exists($duckiebot_wtd_test_filepath) ){
 			$wtd_str = file_get_contents($duckiebot_wtd_test_filepath);
 			$wtd = json_decode($wtd_str, true);
