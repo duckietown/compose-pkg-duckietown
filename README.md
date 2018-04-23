@@ -118,3 +118,18 @@ The library
 Terminal Emulator and SSH client. It constitutes a good
 candidate for implementing an SSH terminal on
 Duckieboard.
+
+
+## (Secure) ROS Bridge
+
+[ROS Bridge](https://github.com/RobotWebTools/rosbridge_suite) is an open-source library
+that allows us to tunnel ROS data through a TCP/UDP/WS connection. We can use it to connect
+ROS to Duckieboard by tunneling ROS via a WebSocket (WS) connection.
+[roslibjs](https://github.com/RobotWebTools/roslibjs) is a ROS client written in JavaScript
+that can communicate with ROS Bridge. By default, WSs do not provide security/authentication
+protocols. Nonetheless, ROS Bridge implements a simple MAC-based OAuth1.0 authentication
+procedure that uses the [rosauth](https://github.com/GT-RAIL/rosauth) library.
+The authentication in ROS Bridge is disabled by default, it can be enabled
+[here](https://github.com/RobotWebTools/rosbridge_suite/blob/develop/rosbridge_server/src/rosbridge_server/websocket_handler.py#L48).
+For further information about how to construct an authentication token in JS that is compatible
+with rosauth look at the implementation of rosauth [here](https://github.com/GT-RAIL/rosauth/blob/develop/src/ros_mac_authentication.cpp).
