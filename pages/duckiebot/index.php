@@ -24,11 +24,13 @@ if( \system\classes\Core::getUserRole() == 'user' ){
 		\system\classes\Core::throwError('Your account is not linked to any Duckiebot');
 	}
 	$duckiebotName = $res['data'];
-}else{
+}else if( in_array(\system\classes\Core::getUserRole(), ['administrator', 'supervisor']) ){
 	$duckiebotName = \system\classes\Configuration::$ACTION;
 	if( strlen($duckiebotName) < 1 ){
 		\system\classes\Core::redirectTo("");
 	}
+}else{
+	\system\classes\Core::redirectTo("");
 }
 
 if( !Duckietown::duckiebotExists($duckiebotName) ){
@@ -159,7 +161,9 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 
 
 
-	<h3 style="margin:80px 0 20px 0; border-bottom:1px solid #ddd;"><i class="fa fa-exchange" aria-hidden="true"></i>&nbsp; Network</h3>
+	<h3 style="margin:80px 0 20px 0; border-bottom:1px solid #ddd;">
+		<i class="fa fa-exchange" aria-hidden="true"></i>&nbsp; Network
+	</h3>
 
 	<div id="network-section-placeholder" class="text-center">
 		<img src="<?php echo \system\classes\Configuration::$BASE_URL ?>images/loading_blue.gif" style="width:32px; height:32px; margin-bottom:20px">
@@ -170,7 +174,9 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 
 
 
-	<h3 style="margin:60px 0 20px 0; border-bottom:1px solid #ddd;"><span class="glyphicon glyphicon-hdd" aria-hidden="true"></span>&nbsp; Storage</h3>
+	<h3 style="margin:60px 0 20px 0; border-bottom:1px solid #ddd;">
+		<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span>&nbsp; Storage
+	</h3>
 
 	<div id="storage-section-placeholder" class="text-center">
 		<img src="<?php echo \system\classes\Configuration::$BASE_URL ?>images/loading_blue.gif" style="width:32px; height:32px; margin-bottom:20px">
@@ -278,8 +284,10 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 		'skipped' => 0,
 		'failed' => 0
 	);
+	$num_total_tests = 0;
 	foreach ($wtd as $test) {
 		$tests_stats[$test['status']] += 1;
+		$num_total_tests += 1;
 	}
 	?>
 	<nav class="navbar navbar-default" role="navigation" style="margin-bottom:36px">
@@ -319,52 +327,65 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 
 				<div style="padding:20px">
 
-					<table class="table">
-						<tr>
-							<td class="col-md-4 text-bold">
-								Test
-							</td>
-							<td class="col-md-6 text-bold">
-								Result
-							</td>
-							<td class="col-md-2 text-bold">
-								Executed
-							</td>
-						</tr>
-						<?php
-						$test_num = 0;
-						foreach ($wtd as $test) {
-							?>
+					<?php
+					if( $num_total_tests > 0 ){
+						?>
+						<table class="table">
 							<tr>
-								<td class="col-md-4">
-									<?php echo $test['test_name'] ?>
+								<td class="col-md-4 text-bold">
+									Test
 								</td>
-								<td class="col-md-6 <?php echo $wtd_status_color_map[$test['status']]; ?>">
-									<?php
-									switch( $test['status'] ){
-										case 'passed':
-											echo 'Passed';
-											break;
-										case 'skipped':
-										case 'failed':
-											echo $test['out_short'];
-											break;
-										default:
-											break;
-									}
-									?>
+								<td class="col-md-6 text-bold">
+									Result
 								</td>
-								<td class="col-md-2">
-									<span id="<?php echo $test['upload_event_id']; ?>_last_execution_<?php echo $test_num; ?>">
-										...
-									</span>
+								<td class="col-md-2 text-bold">
+									Executed
 								</td>
 							</tr>
 							<?php
-							$test_num += 1;
-						}
-						?>
-					</table>
+							$test_num = 0;
+							foreach ($wtd as $test) {
+								?>
+								<tr>
+									<td class="col-md-4">
+										<?php echo $test['test_name'] ?>
+									</td>
+									<td class="col-md-6 <?php echo $wtd_status_color_map[$test['status']]; ?>">
+										<?php
+										switch( $test['status'] ){
+											case 'passed':
+												echo 'Passed';
+												break;
+											case 'skipped':
+											case 'failed':
+												echo $test['out_short'];
+												break;
+											default:
+												break;
+										}
+										?>
+									</td>
+									<td class="col-md-2">
+										<span id="<?php echo $test['upload_event_id']; ?>_last_execution_<?php echo $test_num; ?>">
+											...
+										</span>
+									</td>
+								</tr>
+								<?php
+								$test_num += 1;
+							}
+							?>
+						</table>
+
+					<?php
+				}else{
+					?>
+					<h4 class="text-center">
+						No tests available
+					</h4>
+					<?php
+				}
+				?>
 
 				</div>
 
@@ -388,6 +409,17 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 		}
 		?>
 	];
+
+
+	function update_section( section_id, html ){
+		container = $('#'+section_id+'-section-container');
+		placeholder = $('#'+section_id+'-section-placeholder');
+		// turn on the indicators
+		container.html( html );
+		// hide the placeholder and show the indicators
+		placeholder.css('display', 'none');
+		container.css('display', '');
+	}
 
 
 
@@ -455,6 +487,7 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 		container = $('#network-section-container');
 		placeholder = $('#network-section-placeholder');
 		// create network interfaces descriptors
+		var j = 0;
 		$.each(result.data.interfaces, function(i) {
 			iface = result.data.interfaces[i];
 			if( iface.name == 'lo' ){
@@ -467,9 +500,10 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 				iface.mac,
 				iface.ip,
 				iface.mask,
-				( (i+1)%3==0 ||  i == result.data.interfaces.length-1 )? '0' : '16px'
+				( (j+1)%3==0 )? '0' : '16px'
 			);
 			container.html( container.html() + html );
+			j += 1;
 		});
 		// hide the placeholder and show the container
 		placeholder.css('display', 'none');
@@ -499,6 +533,10 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 									<td><bold>Device:<bold></td>
 									<td>&nbsp;&nbsp;<span>{1}</span></td>
 								</tr>
+								<tr>
+									<td><bold>Capacity:<bold></td>
+									<td>&nbsp;&nbsp;<span>{7}</span></td>
+								</tr>
 							</table>
 
 							<div class="progress" style="margin:10px 0 0 0">
@@ -527,7 +565,8 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 				'{0}%{1}'.format( used, (used > 34)? ' used' : '' ),
 				'{0}%'.format( free ),
 				'{0}%{1}'.format( free, (free > 34)? ' free' : '' ),
-				( (i+1)%3==0 ||  i == result.data.mountpoints.length-1 )? '0' : '16px'
+				( (i+1)%3==0 || i == result.data.mountpoints.length-1 )? '0' : '16px',
+				mount.size
 			);
 			container.html( container.html() + html );
 		});
@@ -586,8 +625,10 @@ if( !Duckietown::duckiebotExists($duckiebotName) ){
 			var url = '<?php echo \system\classes\Configuration::$BASE_URL ?>web-api/<?php echo \system\classes\Configuration::$WEBAPI_VERSION ?>/duckiebot/ros/json?name=<?php echo $duckiebotName ?>&token=<?php echo $_SESSION["TOKEN"] ?>';
 			callAPI( url, false, false, duckiebot_ros_callback, true );
 		}else{
-			$('#storage-section-container').html('<h4 class="text-center">The Duckiebot is offline.</h4>');
-			$('#network-section-container').html('<h4 class="text-center">The Duckiebot is offline.</h4>');
+			update_section( 'configuration', '<h4 class="text-center" style="padding-right:30px">The Duckiebot is offline.</h4>' );
+			update_section( 'storage', '<h4 class="text-center">The Duckiebot is offline.</h4>' );
+			update_section( 'network', '<h4 class="text-center">The Duckiebot is offline.</h4>' );
+			update_section( 'ros', '<h4 class="text-center">The Duckiebot is offline.</h4>' );
 		}
 	}
 
