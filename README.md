@@ -100,7 +100,9 @@ The library [`supervisor`](http://supervisord.org/) introduces the possibility t
 Duckieboard as a process monitor and manager for Duckiebots. *supervisor* provides
 an XMLRPC interface. This opens two possibilities, (i) bridging the XMLRPC server
 to the outside world, (ii) implementing a ROS interface for *supervisor* that maps
-XMLRPC resources to ROS Services.
+XMLRPC resources to ROS Services. In the first case, the Duckieboard will communicate
+with the supervisor back-end directly via XMLRPC. In the second case, the ROS interface 
+to supervisor will be accessible via ROS Bridge.
 
 I believe that the best option is the latter, that is implementing a ROS interface
 for *supervisor* that maps XMLRPC resources to ROS Services (**UPDATE**: Implemented and 
