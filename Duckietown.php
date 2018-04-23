@@ -139,7 +139,7 @@ class Duckietown{
 			return null;
 		}
 		//
-		return $yaml_content['owner'];
+		return strtolower( preg_replace('/ /', '', $yaml_content['owner']) );
 	}//getDuckiebotOwner
 
 
@@ -161,8 +161,8 @@ class Duckietown{
 				return $res;
 			}
 			// authenticate SSH session
-			$DUCKIEBOT_DEFAULT_USERNAME = Core::getSetting('duckiebot_username');
-			$DUCKIEBOT_DEFAULT_PASSWORD = Core::getSetting('duckiebot_password');
+			$DUCKIEBOT_DEFAULT_USERNAME = Core::getSetting('duckiebot_username', 'duckietown');
+			$DUCKIEBOT_DEFAULT_PASSWORD = Core::getSetting('duckiebot_password', 'duckietown');
 			$auth = @ssh2_auth_password($ssh, $DUCKIEBOT_DEFAULT_USERNAME, $DUCKIEBOT_DEFAULT_PASSWORD);
 			if ( $auth === false ) {
 				$res['data'] = 'Authentication failed';
@@ -248,7 +248,7 @@ class Duckietown{
 		$res = self::execCommandOnDuckiebot( $bot_name, $command );
 		if( $res['success'] ){
 			$data = $res['data'];
-			$interfaces_strs = split("=====", $data);
+			$interfaces_strs = explode("=====", $data);
 			$interfaces = array();
 			// iterate over the interfaces
 			foreach ($interfaces_strs as $interface_str) {
@@ -301,6 +301,7 @@ class Duckietown{
 				$devices[ $dev_mountpoint ] = array(
 					'mountpoint' => $dev_mountpoint,
 					'device' => $dev_name,
+					'size' => 0.0,
 					'used' => 1.0,
 					'free' => 0.0
 				);
@@ -309,14 +310,16 @@ class Duckietown{
 			return $res;
 		}
 		// get list of mountpoints and their status
-		$command = "df | sed -n '1!p' | sed 's/%//g' | awk '{print $6\",\"$5/100}'";
+		$command = "df -h | sed -n '1!p' | sed 's/%//g' | awk '{print $6\",\"$2\",\"$5/100}'";
 		$res = self::execCommandOnDuckiebot( $bot_name, $command, $res['connection'] );
 		if( $res['success'] ){
 			foreach( explode("\n", $res['data']) as $dev ){
 				$dev = explode(",", $dev);
 				$dev_mountpoint = $dev[0];
-				$dev_usage = round( $dev[1], 2 );
+				$dev_size = $dev[1];
+				$dev_usage = round( $dev[2], 2 );
 				if( isset($devices[ $dev_mountpoint ]) ){
+					$devices[ $dev_mountpoint ]['size'] = $dev_size;
 					$devices[ $dev_mountpoint ]['used'] = $dev_usage;
 					$devices[ $dev_mountpoint ]['free'] = 1.0-$dev_usage;
 				}
@@ -637,11 +640,6 @@ class Duckietown{
 		//
 		return array('success' => true, 'data' => null);
 	}//unlinkDuckiebotFromUserAccount
-
-
-
-
-
 
 }//Duckietown
 

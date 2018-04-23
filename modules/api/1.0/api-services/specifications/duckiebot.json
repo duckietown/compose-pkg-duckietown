@@ -286,6 +286,10 @@
                                         "type" : "text",
                                         "details" : "Device mounted to the mountpoint"
                                     },
+                                    "size" : {
+                                        "type" : "text",
+                                        "details" : "Total size of the mountpoint in human-readable format"
+                                    },
                                     "used" : {
                                         "type" : "float",
                                         "details" : "Size of the storage space used. The size is normalized to 1.0"
