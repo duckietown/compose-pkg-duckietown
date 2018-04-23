@@ -133,7 +133,6 @@ $table = array(
 
 	for( $i = 0; $i < sizeof( $duckiebots ); $i++ ){
 		$duckiebot_owner = Duckietown::getDuckiebotOwner( $duckiebots[$i] );
-		$duckiebot_owner = strtolower( preg_replace('/ /', '', $duckiebot_owner) );
 		$bot_record = array(
 			'name' => $duckiebots[$i],
 			'owner' => 'owner_'.$duckiebot_owner,

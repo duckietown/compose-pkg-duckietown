@@ -57,6 +57,17 @@ $tiles = [
 	</table>
 
 
+    <div class="bs-callout bs-callout-info" style="width:970px; margin:auto">
+        <h4>NOTE:</h4>
+        <p>
+            This is a simple proof of concept of a drag-and-drop builder for Duckietown.
+            Drag tiles from the toolbox on the left-hand side of the page onto the grid.
+            If you like the idea and want to contribute, contact me: <a href="mailto:afdaniele@ttic.edu">afdaniele@ttic.edu</a>.
+        </p>
+    </div>
+    <br/>
+    <br/>
+
 
 	<table style="width:100%">
 		<tr>
@@ -77,7 +88,7 @@ $tiles = [
                         <!-- Add a hidden empty tile used to restore the grid when tiles are trashed -->
                         <img class="tile tile_0" style="display:none"
                             id="empty_0"
-                            src="<?php echo Core::getImageURL('empty_plain.svg', 'duckietown'); ?>" />
+                            src="<?php echo Core::getImageURL('empty_tile_plain.svg', 'duckietown'); ?>" />
 				</div>
 
 				<div id="tiles_trash" class="tiles_toolbox_left_bottom"
@@ -95,7 +106,7 @@ $tiles = [
 			<td class="text-center" style="width:100%">
 
 				<?php
-				$rows = 7;
+				$rows = 8;
 				$columns = 5;
 				?>
 

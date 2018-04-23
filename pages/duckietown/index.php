@@ -10,7 +10,8 @@ use \system\classes\Core as Core;
 
 if( Configuration::$ACTION == NULL ){
 	// redirect to /show
-    Core::redirectTo('duckietown/show');
+    // TODO: if there is already a duckietown saved somewhere choose `show` otherwise `new`
+    Core::redirectTo('duckietown/new');
 }elseif( Configuration::$ACTION == 'show' ){
 	// show the town editor
 	require_once __DIR__.'/actions/town-show.php';
