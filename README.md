@@ -102,9 +102,11 @@ an XMLRPC interface. This opens two possibilities, (i) bridging the XMLRPC serve
 to the outside world, (ii) implementing a ROS interface for *supervisor* that maps
 XMLRPC resources to ROS Services.
 
-We believe that the best option is the latter, that is implementing a ROS interface
-for *supervisor* that maps XMLRPC resources to ROS Services. This option gives us the
-extra possibility to correct some issues with *supervisor* monitoring the `roslaunch`
+I believe that the best option is the latter, that is implementing a ROS interface
+for *supervisor* that maps XMLRPC resources to ROS Services (**UPDATE**: Implemented and 
+available at [https://github.com/afdaniele/supervisor_ros](https://github.com/afdaniele/supervisor_ros)
+). This option also gives us the
+possibility to correct some issues with *supervisor* monitoring the `roslaunch`
 process. In fact, `roslaunch` employs its own process manager to monitor all the nodes
 it runs. This process manager would normally mask the presence of running nodes to the
 overhead *supervisor* process manager.
