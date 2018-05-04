@@ -491,6 +491,7 @@ class Duckietown{
 
 
 	public static function getDuckiebotLinkedToUser( $username ){
+		// TODO: this association dir is not used anymore. use Database instead.
 		$associations_dir = __DIR__."/data/private/duckiebot.owner/";
 		// create command
 		$cmd = sprintf("ls -l %s | awk '{print $9}' | grep -E '^%s.[a-z]+$' | cat", $associations_dir, $username);
