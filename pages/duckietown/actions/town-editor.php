@@ -106,7 +106,7 @@ $tiles = [
 			<td class="text-center" style="width:100%">
 
 				<?php
-				$rows = 8;
+				$rows = 6;
 				$columns = 5;
 				?>
 

@@ -199,7 +199,7 @@ $table = array(
 		<?php
 		$qs = urlencode( base64_encode( toQueryString( array_keys($features), $_GET ) ) );
 		?>
-		var url = "<?php echo \system\classes\Configuration::$BASE ?>duckiebot/"+duckiebot+"?<?php echo ( (strlen($qs) > 0)? 'lst='.$qs.'&' : '' ) ?>";
+		var url = "<?php echo \system\classes\Configuration::$BASE ?>duckiebot?veh="+duckiebot+"<?php echo ( (strlen($qs) > 0)? '&lst='.$qs.'&' : '' ) ?>";
 		window.location = url;
 	}
 
