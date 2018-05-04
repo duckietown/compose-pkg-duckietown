@@ -54,14 +54,14 @@ class Duckietown{
      */
 	public static function init(){
 		if( !self::$initialized ){
-			// do stuff
-			$user_role = ( Core::isUserLoggedIn() )? Core::getUserLogged('role') : 'guest';
-			if( $user_role == 'user' ){
-				$bot_name = self::getUserDuckiebot();
-				if( is_null($bot_name) ){
-					Core::setUserRole('candidate');
-				}
-			}
+			//TODO: disabled
+			// $user_role = ( Core::isUserLoggedIn() )? Core::getUserLogged('role') : 'guest';
+			// if( $user_role == 'user' ){
+			// 	$bot_name = self::getUserDuckiebot();
+			// 	if( is_null($bot_name) ){
+			// 		Core::setUserRole('candidate');
+			// 	}
+			// }
 			//
 			return array( 'success' => true, 'data' => null );
 		}else{
