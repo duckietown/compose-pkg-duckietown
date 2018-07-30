@@ -8,7 +8,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -38,7 +41,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -66,7 +72,9 @@
             "access_level" : [
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -102,7 +110,9 @@
             "access_level" : [
                 "candidate"
             ],
-            "read_only_session" : false,
+            "authentication" : [
+                "web"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -140,7 +150,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : false,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -169,7 +182,10 @@
                 "administrator",
                 "supervisor"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -195,7 +211,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -254,7 +273,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -313,7 +335,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
@@ -357,7 +382,10 @@
                 "supervisor",
                 "user"
             ],
-            "read_only_session" : true,
+            "authentication" : [
+                "web",
+                "app"
+            ],
             "parameters" : {
                 "mandatory" : {
                     "name" : {
