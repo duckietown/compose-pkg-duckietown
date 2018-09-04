@@ -1,0 +1,43 @@
+{
+    "details" : "Provides the tools for managing the Duckietown authentication token",
+	"actions" : {
+		"set" : {
+			"details" : "Associates a new authorization token to the logged user account",
+            "access_level" : [
+                "duckietown:candidate"
+            ],
+            "authentication" : [
+                "web"
+            ],
+		    "parameters" : {
+		        "mandatory" : {
+                    "duckietoken" : {
+		                "type" : "text",
+                        "length" : null,
+		                "details" : "Duckietown token to associate to the account. It can be retrieved at the link https://www.duckietown.org/site/your-token"
+		            }
+                },
+		        "optional" : {}
+		    },
+		    "return" : {
+		        "values" : {}
+		    }
+		},
+        "unlink" : {
+			"details" : "Removes any authentication token associated to the logged user account",
+            "access_level" : [
+                "duckietown:user"
+            ],
+            "authentication" : [
+                "web"
+            ],
+		    "parameters" : {
+		        "mandatory" : {},
+		        "optional" : {}
+		    },
+		    "return" : {
+		        "values" : {}
+            }
+		}
+	}
+}

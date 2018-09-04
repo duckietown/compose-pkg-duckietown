@@ -10,13 +10,15 @@
 namespace system\packages\duckietown;
 
 require_once $GLOBALS['__SYSTEM__DIR__'].'classes/Core.php';
-use \system\classes\Core as Core;
+use \system\classes\Core;
 
 require_once $GLOBALS['__SYSTEM__DIR__'].'classes/Configuration.php';
-use \system\classes\Configuration as Configuration;
+use \system\classes\Configuration;
 
 require_once $GLOBALS['__SYSTEM__DIR__'].'classes/Utils.php';
-use \system\classes\Utils as Utils;
+use \system\classes\Utils;
+
+use \system\classes\Database;
 
 
 /**
@@ -25,6 +27,8 @@ use \system\classes\Utils as Utils;
 class Duckietown{
 
 	private static $initialized = false;
+	private static $user_token = null;
+	private static $user_duckiebot = null;
 
 	private static $DUCKIEBOT_W_CONFIG_DEVICE_VID_PID_LIST = [
 		'7392:b822'
@@ -54,14 +58,43 @@ class Duckietown{
      */
 	public static function init(){
 		if( !self::$initialized ){
-			//TODO: disabled
-			// $user_role = ( Core::isUserLoggedIn() )? Core::getUserLogged('role') : 'guest';
-			// if( $user_role == 'user' ){
-			// 	$bot_name = self::getUserDuckiebot();
-			// 	if( is_null($bot_name) ){
-			// 		Core::setUserRole('candidate');
-			// 	}
-			// }
+			// register new user types
+			Core::registerNewUserRole('duckietown', 'candidate', 'setup');
+			Core::registerNewUserRole('duckietown', 'guest');
+			Core::registerNewUserRole('duckietown', 'user');
+			Core::registerNewUserRole('duckietown', 'engineer');
+			// update the role of the current user
+			if( !Core::isUserLoggedIn() ){
+				// set the user role to be a `duckietown:guest`
+				Core::setUserRole('guest', 'duckietown');
+			}else{
+				// set the user role to be a `duckietown:candidate` (by default)
+				Core::setUserRole('candidate', 'duckietown');
+				$user_role = Core::getUserRole();
+				if( in_array($user_role, ['user', 'supervisor', 'administrator']) ){
+					$username = Core::getUserLogged('username');
+					// open tokens database
+					$db = new Database('duckietown', 'token');
+					// if the duckietoken entry exists, the user is at least a `duckietown:user`
+					if( $db->key_exists($username) ){
+						$res = $db->read($username);
+						if( !$res['success'] ) return $res;
+						// read token
+						self::$user_token = $res['data']['value'];
+						Core::setUserRole('user', 'duckietown');
+					}
+					// open user->duckiebots database
+					$db = new Database('duckietown', 'user_to_vehicle');
+					// if the duckiebot entry exists, the user is a `duckietown:engineer`
+					if( $db->key_exists($username) ){
+						$res = $db->read($username);
+						if( !$res['success'] ) return $res;
+						// read token
+						self::$user_duckiebot = $res['data']['vehicle_name'];
+						Core::setUserRole('engineer', 'duckietown');
+					}
+				}
+			}
 			//
 			return array( 'success' => true, 'data' => null );
 		}else{
@@ -88,30 +121,40 @@ class Duckietown{
 
 
 
+	// =======================================================================================================
+	// Public functions
 
-
-
-
-
-
-
-
-
+	public static function getUserToken( $user_id=null ){
+		if( is_null($user_id) )
+			return self::$user_token;
+		// load token for the given user
+		$db = new Database('duckietown', 'token');
+		if( $db->key_exists($user_id) ){
+			$res = $db->read($user_id);
+			if( !$res['success'] ) return $res;
+			//
+			return $res['data']['value'];
+		}
+		return null;
+	}//getUserToken
 
 
 	public static function getUserDuckiebot(){
-		if( isset($_SESSION['USER_DUCKIEBOT']) ){
-			return $_SESSION['USER_DUCKIEBOT'];
-		}
-		$username = Core::getUserLogged('username');
-		$res = self::getDuckiebotLinkedToUser($username);
-		if( !$res['success'] ){
-			Core::throwError($res['data']);
-		}
-		$_SESSION['USER_DUCKIEBOT'] = $res['data'];
-		return $_SESSION['USER_DUCKIEBOT'];
+		return self::$user_duckiebot;
 	}//getUserDuckiebot
 
+
+
+
+
+
+
+
+
+
+
+
+	// TODO: everything after this line is from Duckietown 2017 and will likely need to be changed
 
 	public static function getDuckiebotsCurrentBranch(){
 		$DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown', '/tmp');

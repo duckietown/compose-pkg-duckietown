@@ -108,7 +108,7 @@
         "associate" : {
             "details" : "Associate the given Duckiebot with the user currently logged in",
             "access_level" : [
-                "candidate"
+                "duckietown:user"
             ],
             "authentication" : [
                 "web"
