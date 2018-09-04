@@ -17,8 +17,6 @@
     },
     "child_pages" : [],
     "access_level" : [
-        "administrator",
-        "supervisor",
-        "user"
+        "duckietown:engineer"
     ]
 }

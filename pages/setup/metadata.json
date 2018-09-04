@@ -1,20 +1,19 @@
 {
-    "name" : "Duckietown",
+    "name" : "Setup",
     "package" : "duckietown",
     "menu_entry" : {
-        "order" : 1,
+        "order" : 0,
         "icon" : {
             "class" : "fa",
-            "name" : "tree"
+            "name" : "wrench"
         },
         "responsive" : {
-            "priority" : 1
+            "priority" : 35
         },
         "exclude_roles" : []
     },
     "child_pages" : [],
     "access_level" : [
-        "administrator",
-        "supervisor"
+        "duckietown:candidate"
     ]
 }
