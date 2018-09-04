@@ -68,7 +68,7 @@ class SensorMsgs_CompressedImage extends BlockRenderer{
                 name : '<?php echo $args['topic'] ?>',
                 messageType : 'sensor_msgs/CompressedImage',
                 queue_size : 1,
-                throttle_rate : <?php echo 1000/$args['fps'] ?>
+                throttle_rate : <?php echo intval(1000/$args['fps']) ?>
             });
 
             subscriber.subscribe(function(message) {
