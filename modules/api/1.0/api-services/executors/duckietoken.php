@@ -52,9 +52,30 @@ function execute( &$service, &$actionName, &$arguments ){
 			if( $curl_res['http_code'] == 401 ){
 				return response400BadRequest('The token is not valid');
 			}
-			// success, store token
-			$db = new Database('duckietown', 'token');
-			$res = $db->write( $user_id, ['value' => $token] );
+			// try to decode the response
+			$response = null;
+			try {
+				$response = json_decode($curl_response, true);
+			}catch( \Exception $e ){
+				return response500InternalServerError('An error occurred while talking to the challenges API. The response is not a valid JSON.');
+			}
+			// check call status
+			if( !$response['ok'] )
+				return response500InternalServerError(
+					sprintf(
+						'An error occurred while talking to the challenges API. The server returned <strong>%s</strong>.',
+						$response['msg']
+					)
+			);
+			// success, store auth info
+			$db = new Database('duckietown', 'authentication');
+			$res = $db->write(
+				$user_id,
+				[
+					'uid' => $response['result']['uid'],
+					'token' => $token
+				]
+			);
 			if( !$res['success'] ) return response500InternalServerError($res['data']);
 			//
 			return response200OK();
@@ -63,8 +84,8 @@ function execute( &$service, &$actionName, &$arguments ){
 		case 'unlink':
 			// get username of the current user
 			$user_id = Core::getUserLogged('username');
-			// unlink token
-			$db = new Database('duckietown', 'token');
+			// unlink auth info
+			$db = new Database('duckietown', 'authentication');
 			$res = $db->delete( $user_id );
 			if( !$res['success'] ) return response500InternalServerError($res['data']);
 			//

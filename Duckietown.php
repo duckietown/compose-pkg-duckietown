@@ -27,6 +27,7 @@ use \system\classes\Database;
 class Duckietown{
 
 	private static $initialized = false;
+	private static $user_id = null;
 	private static $user_token = null;
 	private static $user_duckiebot = null;
 
@@ -74,13 +75,14 @@ class Duckietown{
 				if( in_array($user_role, ['user', 'supervisor', 'administrator']) ){
 					$username = Core::getUserLogged('username');
 					// open tokens database
-					$db = new Database('duckietown', 'token');
+					$db = new Database('duckietown', 'authentication');
 					// if the duckietoken entry exists, the user is at least a `duckietown:user`
 					if( $db->key_exists($username) ){
 						$res = $db->read($username);
 						if( !$res['success'] ) return $res;
-						// read token
-						self::$user_token = $res['data']['value'];
+						// read ID and token
+						self::$user_id = $res['data']['uid'];
+						self::$user_token = $res['data']['token'];
 						Core::setUserRole('user', 'duckietown');
 					}
 					// open user->duckiebots database
@@ -128,15 +130,29 @@ class Duckietown{
 		if( is_null($user_id) )
 			return self::$user_token;
 		// load token for the given user
-		$db = new Database('duckietown', 'token');
+		$db = new Database('duckietown', 'authentication');
 		if( $db->key_exists($user_id) ){
 			$res = $db->read($user_id);
 			if( !$res['success'] ) return $res;
 			//
-			return $res['data']['value'];
+			return $res['data']['token'];
 		}
 		return null;
 	}//getUserToken
+
+	public static function getDuckietownUserId( $user_id=null ){
+		if( is_null($user_id) )
+			return self::$user_id;
+		// load token for the given user
+		$db = new Database('duckietown', 'authentication');
+		if( $db->key_exists($user_id) ){
+			$res = $db->read($user_id);
+			if( !$res['success'] ) return $res;
+			//
+			return $res['data']['uid'];
+		}
+		return null;
+	}//getDuckietownUserId
 
 
 	public static function getUserDuckiebot(){
