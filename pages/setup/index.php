@@ -6,6 +6,8 @@
 
 use \system\classes\Core;
 use \system\classes\Configuration;
+
+$CHALLENGES_API_VERSION = 'v3';
 ?>
 
 <!-- https://github.com/45678/Base58 -->
@@ -75,7 +77,7 @@ use \system\classes\Configuration;
 		}
 		showPleaseWait();
 		// verify token on the server
-		var url = "https://challenges.duckietown.org/v2/info";
+		var url = "https://challenges.duckietown.org/<?php echo $CHALLENGES_API_VERSION ?>/info";
 		// call API
 		$.ajax({
 			type: 'GET',
