@@ -27,6 +27,13 @@ use \system\classes\Database;
 class Duckietown{
 
 	private static $initialized = false;
+
+	//TODO: this should be independent from AIDO Challenges
+	public static $duckietown_api_protocol = "https";
+	public static $duckietown_api_host = "challenges.duckietown.org";
+	public static $duckietown_api_version = "v3";
+
+	// user-specific data
 	private static $user_id = null;
 	private static $user_token = null;
 	private static $user_duckiebot = null;
@@ -34,12 +41,10 @@ class Duckietown{
 	private static $DUCKIEBOT_W_CONFIG_DEVICE_VID_PID_LIST = [
 		'7392:b822'
 	];
-
 	private static $DUCKIEBOT_D_CONFIG_DEVICE_VID_PID_LIST = [
 		'0781:5583',
 		'090c:1000'
 	];
-
 	private static $WHAT_THE_DUCK_TESTS_DATA_PATH = "/tmp";
 
 

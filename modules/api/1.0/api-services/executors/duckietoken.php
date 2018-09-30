@@ -26,9 +26,9 @@ function execute( &$service, &$actionName, &$arguments ){
 			// verify token
 			$url = sprintf(
 				'%s://%s/%s/%s',
-				'https',
-				'challenges.duckietown.org',
-				'v2',
+				Duckietown::$duckietown_api_protocol,
+				Duckietown::$duckietown_api_host,
+				Duckietown::$duckietown_api_version,
 				'info'
 			);
 			// configure a CURL object
