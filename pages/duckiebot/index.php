@@ -52,4 +52,4 @@ if( in_array($action, ['home', 'mission-control']) ){
 ?>
 
 
-<script type="text/javascript" src="<?php echo Core::getJSscriptURL('roslibjs.min.js', 'duckietown'); ?>"></script>
+<script type="text/javascript" src="<?php echo Core::getJSscriptURL('roslibjs.min.js', 'ros'); ?>"></script>
