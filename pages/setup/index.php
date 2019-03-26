@@ -99,15 +99,14 @@ use \system\packages\duckietown\Duckietown;
 					'%s/web-api/%s/duckietoken/set/json?duckietoken={0}&token=%s',
 					Configuration::$BASE_URL,
 					Configuration::$WEBAPI_VERSION,
-					$_SESSION['TOKEN'],
 					$_SESSION['TOKEN']) ?>".format( token );
 				callAPI( url, true, true );
-		    },
+	    },
 			error: function( jqXHR, textStatus, errorThrown ){
 		        // error
 				hidePleaseWait();
 				openAlert('danger', 'The token is not valid. Please check and try again.');
-	    	}
+    	}
 		});
 	});
 

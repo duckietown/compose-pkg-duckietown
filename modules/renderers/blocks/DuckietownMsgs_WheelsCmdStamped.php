@@ -1,6 +1,8 @@
 <?php
-use \system\classes\Core as Core;
-use \system\classes\BlockRenderer as BlockRenderer;
+use \system\classes\Core;
+use \system\classes\BlockRenderer;
+use \system\packages\ros\ROS;
+
 
 class DuckietownMsgs_WheelsCmdStamped extends BlockRenderer{
 
@@ -33,7 +35,7 @@ class DuckietownMsgs_WheelsCmdStamped extends BlockRenderer{
     <canvas class="resizable" style="width:100%; height:95%; padding:6px 16px"></canvas>
 
     <script type="text/javascript">
-    $( document ).on( "ROSBridge_connected", function(evt){
+    $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       // Subscribe to the given topic
       subscriber = new ROSLIB.Topic({
         ros : window.ros,
