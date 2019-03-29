@@ -7,3 +7,7 @@ configuration/configuration.json
 
 # Global
 .remote-sync.json
+
+# Package-specific
+*__pycache__
+*pyc
