@@ -62,7 +62,7 @@ $('#dt-login-confirm').on('click', function(){
   // split the token in three parts
   parts = token.split('-');
   if( parts.length != 3 ){
-    openAlert( 'danger', 'The token is not valid' );
+    openAlert( 'danger', '[Error DT-1]: The token is not valid' );
     return;
   }
   // get parts
@@ -76,12 +76,12 @@ $('#dt-login-confirm').on('click', function(){
   try {
     payload = JSON.parse(payload);
   } catch (e) {
-    openAlert( 'danger', 'Invalid token format; Invalid payload.' );
+    openAlert( 'danger', '[Error DT-2]: Invalid token format; Invalid payload.' );
     return;
   }
   if( payload.uid == undefined || payload.exp == undefined ){
     // not valid
-    openAlert( 'danger', 'Invalid token format; Missing fields from payload.' );
+    openAlert( 'danger', '[Error DT-3]: Invalid token format; Missing fields from payload.' );
     return;
   }
   showPleaseWait();

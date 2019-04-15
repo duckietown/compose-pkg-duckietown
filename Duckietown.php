@@ -182,15 +182,15 @@ class Duckietown{
     // validate given token
     $parts = explode('-', $duckietoken);
     if (count($parts) != 3){
-      return ['success' => False, 'data' => 'Duckietown Token not valid'];
+      return ['success' => False, 'data' => '[Error DT-20]: Duckietown Token not valid'];
     }
     $expected_length = [3, -1, -1];
     for ($i=0; $i < 3; $i++) {
       if ($expected_length[$i] > 0 && strlen($parts[$i]) != $expected_length[$i]){
-        return ['success' => False, 'data' => 'Duckietown Token not valid'];
+        return ['success' => False, 'data' => '[Error DT-21]: Duckietown Token not valid'];
       }
       if (!StringType::isAlphaNumeric($parts[$i])){
-        return ['success' => False, 'data' => 'Duckietown Token not valid'];
+        return ['success' => False, 'data' => '[Error DT-22]: Duckietown Token not valid'];
       }
     }
     // ---
@@ -207,7 +207,10 @@ class Duckietown{
     // ---
     $res = json_decode($output[0], True);
     if (!$success){
-      return ['success' => False, 'data' => $res['message']];
+      return [
+        'success' => False,
+        'data' => sprintf('[Error DT-PY-%s]: %s', $res['exit_code'], $res['message'])
+      ];
     }
     return ['success' => True, 'data' => $res['data']];
   }//verifyDuckietoken
