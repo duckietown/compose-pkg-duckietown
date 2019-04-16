@@ -55,7 +55,7 @@ class Duckietown{
   public static function init(){
     if( !self::$initialized ){
       // register new user types
-      Core::registerNewUserRole('duckietown', 'candidate', 'setup');
+      Core::registerNewUserRole('duckietown', 'candidate', 'setup-token');
       Core::registerNewUserRole('duckietown', 'guest');
       Core::registerNewUserRole('duckietown', 'user');
       Core::registerNewUserRole('duckietown', 'engineer');
