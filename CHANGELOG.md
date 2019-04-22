@@ -1,3 +1,9 @@
+## 0.1.1 (April 21, 2019)
+  - added bump-version
+  - added support for redirect-after-login
+  - minor
+  - added error codes
+
 ## 1.0.0 (April 21, 2019)
   - added support for redirect-after-login
   - minor
