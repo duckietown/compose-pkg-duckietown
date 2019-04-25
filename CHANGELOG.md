@@ -1,3 +1,6 @@
+## 0.1.3 (April 24, 2019)
+  - removed JS libraries that are now available in \compose
+
 ## 0.1.2 (April 21, 2019)
   - minor
 
