@@ -1,9 +1,7 @@
 <?php
 # @Author: Andrea F. Daniele <afdaniele>
-# @Date:   Friday, January 12th 2018
 # @Email:  afdaniele@ttic.edu
 # @Last modified by:   afdaniele
-# @Last modified time: Friday, January 12th 2018
 
 ?>
 

@@ -1,9 +1,7 @@
 <?php
 # @Author: Andrea F. Daniele <afdaniele>
-# @Date:   Thursday, October 12th 2017
 # @Email:  afdaniele@ttic.edu
 # @Last modified by:   afdaniele
-# @Last modified time: Tuesday, February 13th 2018
 
 use \system\classes\Configuration as Configuration;
 use \system\classes\Core as Core;
