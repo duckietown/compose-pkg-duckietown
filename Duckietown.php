@@ -295,8 +295,8 @@ class Duckietown{
   // TODO: everything after this line is from Duckietown 2017 and will likely need to be changed
 
   public static function getDuckiebotsCurrentBranch(){
-    $DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown', '/tmp');
-    $DUCKIEFLEET_BRANCH = Core::getSetting('duckiefleet_branch', 'duckietown', '');
+    $DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown');
+    $DUCKIEFLEET_BRANCH = Core::getSetting('duckiefleet_branch', 'duckietown');
     exec( "ls -l '".$DUCKIEFLEET_PATH.'/robots/'.$DUCKIEFLEET_BRANCH."' | awk '{print $9}' | grep -E '[a-zA-Z0-9]*.robot.yaml' | sed -e 's/\.robot.yaml$//'", $duckiebots, $exit_code );
     //
     return $duckiebots;
@@ -308,8 +308,8 @@ class Duckietown{
       return array('success' => false, 'data' => 'Duckiebot not found');
     }
     //
-    $DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown', '/tmp');
-    $DUCKIEFLEET_BRANCH = Core::getSetting('duckiefleet_branch', 'duckietown', '');
+    $DUCKIEFLEET_PATH = Core::getSetting('duckiefleet_root', 'duckietown');
+    $DUCKIEFLEET_BRANCH = Core::getSetting('duckiefleet_branch', 'duckietown');
     $yaml_file = $DUCKIEFLEET_PATH.'/robots/'.$DUCKIEFLEET_BRANCH.'/'.$bot_name.'.robot.yaml';
     $yaml_file = str_replace('//', '/', $yaml_file);
     if( !file_exists($yaml_file) ){
