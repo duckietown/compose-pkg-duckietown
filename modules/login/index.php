@@ -38,6 +38,11 @@ $icon_url = Core::getImageURL('logo_h60.png', 'duckietown');
 
       </div>
       <div class="modal-footer" style="background-color: #ffc60f; border-radius: 0 0 8px 8px">
+        <a href="https://www.duckietown.org/site/your-token" target="_blank" style="float: left; font-size: 14px; margin-top: 6px">
+          <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+          Get your token
+        </a>
+
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" id="dt-login-confirm" class="btn btn-primary">Login</button>
       </div>
