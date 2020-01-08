@@ -1,3 +1,9 @@
+## 0.1.4 (January 08, 2020)
+  - now recording login system
+  - removed default value from Core::getSetting calls
+  - added Get your token to Duckietown Login modal
+  - removed Last modified time meta
+
 ## 0.1.3 (April 24, 2019)
   - removed JS libraries that are now available in \compose
 
