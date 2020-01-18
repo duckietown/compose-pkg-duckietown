@@ -201,8 +201,8 @@ class Duckietown{
     // ---
     // it is now safe to append the token to the python call
     $token_verifier_py = sprintf(
-      '%s/duckietown/modules/login/python/duckietoken.py',
-      $GLOBALS['__PACKAGES__DIR__']
+      '%smodules/login/python/duckietoken.py',
+      Core::getPackageDetails('duckietown', 'root')
     );
     $cmd = sprintf('python3 %s "%s"', $token_verifier_py, $duckietoken);
     $output = "";
@@ -243,7 +243,7 @@ class Duckietown{
     // verify duckietoken
     $res = self::verifyDuckietoken($duckietoken);
     if(!$res['success'])
-    return $res;
+      return $res;
     // ---
     $duckietown_user_id = $res['data']['uid'];
     $userid = sprintf('duckietown_user_%s', $duckietown_user_id);

@@ -33,14 +33,14 @@ $tiles = [
 ?>
 
 <link href="<?php echo sprintf("%scss.php?package=%s&stylesheet=%s",
-	\system\classes\Configuration::$BASE_URL, 'duckietown', 'duckietown_page.css'); ?>" rel="stylesheet">
+	\system\classes\Configuration::$BASE, 'duckietown', 'duckietown_page.css'); ?>" rel="stylesheet">
 <script src="<?php echo sprintf("%sjs.php?package=%s&script=%s",
-	\system\classes\Configuration::$BASE_URL, 'duckietown', 'duckietown_page.js'); ?>"></script>
+	\system\classes\Configuration::$BASE, 'duckietown', 'duckietown_page.js'); ?>"></script>
 
 <!-- load JQuery 1.11.1 -->
 <!-- TODO: In future versions of \compose\ this will be loaded as an auxiliary library by \compose\ -->
 <script src="<?php echo sprintf("%sjs.php?package=%s&script=%s",
-	\system\classes\Configuration::$BASE_URL, 'duckietown', 'jquery-ui-1.11.1.js'); ?>"></script>
+	\system\classes\Configuration::$BASE, 'duckietown', 'jquery-ui-1.11.1.js'); ?>"></script>
 
 <div style="width:100%; margin:auto">
 

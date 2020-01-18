@@ -36,7 +36,7 @@ if( \system\classes\Core::getUserRole() == 'user' ){
 					<tr>
 						<td class="col-md-3 text-center" style="border-right:1px solid lightgray">
 							<h3 style="margin:18px; margin-left:10px">
-								<img src="<?php echo \system\classes\Configuration::$BASE_URL ?>images/duckiebot.gif" style="width:96px" />
+								<img src="<?php echo \system\classes\Configuration::$BASE ?>images/duckiebot.gif" style="width:96px" />
 							</h3>
 						</td>
 						<td class="col-md-9" style="padding:20px">
@@ -54,7 +54,7 @@ if( \system\classes\Core::getUserRole() == 'user' ){
 	</nav>
 
 	<script type="text/javascript">
-		var baseurl = '<?php echo \system\classes\Configuration::$BASE_URL ?>';
+		var baseurl = '<?php echo \system\classes\Configuration::$BASE ?>';
 		var apiversion = '<?php echo \system\classes\Configuration::$WEBAPI_VERSION ?>';
 		var token = '<?php echo $_SESSION['TOKEN'] ?>';
 		var duckiebotName =  "<?php echo $duckiebot_name ?>";

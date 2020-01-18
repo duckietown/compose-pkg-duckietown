@@ -92,15 +92,15 @@ $('#dt-login-confirm').on('click', function(){
   showPleaseWait();
 
   function on_login_success_fcn(){
-    window.open("<?php echo Configuration::$BASE_URL.base64_decode($_GET['q']) ?>", "_top");
+    $(window).trigger('COMPOSE_LOGGED_IN');
   }//on_login_success_fcn
 
   // call API
   url = "<?php echo sprintf(
-    '%s/web-api/%s/duckietoken/login_with_duckietoken/json?duckietoken={0}&token=%s',
-    Configuration::$BASE_URL,
+    '%sweb-api/%s/duckietoken/login_with_duckietoken/json?duckietoken={0}&token=%s',
+    Configuration::$BASE,
     Configuration::$WEBAPI_VERSION,
-    $_SESSION['TOKEN']) ?>".format( token );
+    $_SESSION['TOKEN']) ?>".format(token);
 
   callAPI( url, true, false, on_login_success_fcn );
 });

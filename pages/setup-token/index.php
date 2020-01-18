@@ -81,8 +81,8 @@ $('#dt-confirm').on('click', function(){
   showPleaseWait();
   // send token to the server
   url = "<?php echo sprintf(
-    '%s/web-api/%s/duckietoken/set/json?duckietoken={0}&token=%s',
-    Configuration::$BASE_URL,
+    '%sweb-api/%s/duckietoken/set/json?duckietoken={0}&token=%s',
+    Configuration::$BASE,
     Configuration::$WEBAPI_VERSION,
     $_SESSION['TOKEN']) ?>".format(token);
   callAPI( url, true, true );

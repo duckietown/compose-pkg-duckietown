@@ -3,6 +3,10 @@
 # @Email:  afdaniele@ttic.edu
 # @Last modified by:   afdaniele
 
+use \system\classes\Core;
+
+require_once join_path(Core::getPackageDetails('core', 'root'), 'modules', 'modals', 'record_editor_modal.php');
+
 
 include_once __DIR__.'/../utils.php';
 
@@ -27,7 +31,7 @@ $grid = [
     'cell_1_1' => 'curve_90'
 ];
 
-$empty_tile_file = sprintf('%s/%s', $GLOBALS['__PACKAGES__DIR__'], 'duckietown/images/empty_tile_plain.svg');
+$empty_tile_file = join_path(Core::getPackageDetails('duckietown', 'root'), 'images', 'empty_tile_plain.svg');
 $empty_tile = file_get_contents($empty_tile_file);
 
 $tile_svg = [
@@ -35,7 +39,7 @@ $tile_svg = [
 ];
 
 foreach ($tiles as $tile => $_) {
-    $tile_file = sprintf('%s/duckietown/images/%s_tile_plain.svg', $GLOBALS['__PACKAGES__DIR__'], $tile);
+    $tile_file = join_path(Core::getPackageDetails('duckietown', 'root'), 'images', $tile.'_tile_plain.svg');
     $tile_content = file_get_contents($tile_file);
 
     // TODO: to be removed, store raw xml
