@@ -61,7 +61,7 @@ class DuckietownMsgs_Twist2DStamped extends BlockRenderer{
           </span>
         </td>
         <td style="width:35%" class="text-center">
-          <?php echo sprintf("%.1f",$args['max_value']) ?>
+          <?php echo sprintf("%.1f", $args['max_value']) ?>
         </td>
       </tr>
     </table>
