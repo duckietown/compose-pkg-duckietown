@@ -1,0 +1,21 @@
+{
+    "name" : "Diagnostics",
+    "package" : "duckietown",
+    "menu_entry" : {
+        "order" : 0,
+        "icon" : {
+            "class" : "fa",
+            "name" : "heartbeat"
+        },
+        "responsive" : {
+            "priority" : 35
+        },
+        "exclude_roles" : []
+    },
+    "child_pages" : [],
+    "access_level" : [
+        "administrator",
+        "supervisor",
+        "user"
+    ]
+}
