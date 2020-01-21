@@ -293,66 +293,6 @@ class Duckietown{
     return ['success' => true, 'data' => $user_info];
   }//logInUserWithDuckietoken
 
-
-
-
-    // Log Statistics
-
-    public static function logsGetSystemInfo($db_name, $logs_keys){
-        $data = [];
-        // constants
-        $preserve_keys = [
-            "SystemTime",
-            "KernelVersion",
-            "OperatingSystem",
-            "OSType",
-            "Architecture",
-            "NCPU",
-            "MemTotal",
-            "Name",
-            "ServerVersion",
-            "Warnings"
-        ];
-        // open database
-        $db = Database('data', $db_name);
-        // ---
-        foreach ($logs_keys as $log_key) {
-            if (!$db->key_exists($log_key)){
-                continue;
-            }
-            $log = $db->read($log_key);
-            $data[$log_key] = [];
-            foreach ($preserve_keys as $key){
-                $data[$log_key][$key] = $log['endpoint'][$key];
-            }
-        }
-        // ---
-        return $data;
-    }//logsGetSystemInfo
-
-
-
-
-//
-//     "SystemTime": "2020-01-17T21:30:08.332963239Z",
-//     "KernelVersion": "4.19.58-v7l ",
-//     "OperatingSystem": "Raspbian GNU\/Linux 10 (buster)",
-//     "OSType": "linux",
-//     "Architecture": "armv7l",
-//     "NCPU": 4,
-//     "MemTotal": 4042252288,
-//     "Name": "watchtower01",
-//     "ServerVersion": "19.03.1",
-//     "Warnings": [
-//         "WARNING: No swap limit support",
-//         "WARNING: No cpu cfs quota support",
-//         "WARNING: No cpu cfs period support"
-//     ]
-
-
-
-
-
 }//Duckietown
 
 ?>
