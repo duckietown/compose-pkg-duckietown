@@ -1,10 +1,3 @@
-<?php
-use \system\packages\data\Data;
-
-$res = Data::list($LOGS_DATABASE);
-$keys = $res['data'];
-?>
-
 <form class="form-inline" id="_log_selectors_form">
 
   <div class="row">
@@ -102,6 +95,7 @@ _logs_print_table_structure('_main_table');
 
 <script type="text/javascript">
 
+window._DIAGNOSTICS_LOGS_KEYS = [];
 window._DIAGNOSTICS_LOGS_DATA = {};
 
 $('#_sel_version').on('changed.bs.select', function(){
@@ -151,9 +145,7 @@ $('#_sel_stamp').on('changed.bs.select', function (){
 });
 
 function filter_keys(version, group, type, device) {
-    let keys = [
-        <?php echo implode(', ', array_map(function($k){return sprintf('"%s"', $k);}, $keys)) ?>
-    ];
+    let keys = window._DIAGNOSTICS_LOGS_KEYS;
     // apply filter
     let _versions = [];
     let _groups = [];
@@ -292,6 +284,8 @@ $('#_btn_add_log').on('click', function(){
     $('#_sel_stamp').val([]);
     $('#_sel_stamp').trigger('changed.bs.select');
     $('#_sel_stamp').selectpicker('refresh');
+
+
     // disable tabs
     $('#_logs_tab_btns a').prop('disabled', true);
     // enable fetch button
@@ -303,15 +297,55 @@ $('#_btn_add_log').on('click', function(){
 });
 
 $('#_btn_fetch_logs').on('click', function(){
-    smartAPI('data', 'list', {
-        'arguments': {
-            'database': '<?php echo $LOGS_DATABASE ?>'
-        }
+    // get list of keys
+    let keys = get_listed_logs();
+    if (keys.length <= 0) return;
+    // define success function
+    success_fcn = function(){
+        hidePleaseWait();
+        // show success dialog
+        showSuccessDialog(500, function(){
+            // enable tabs
+            $('#_logs_tab_btns a').prop('disabled', false);
+        });
+    };
+    // open PleaseWait dialog
+    showPleaseWait();
+    // fetch logs
+    keys.forEach(function(key, i){
+        smartAPI('data', 'get', {
+            'arguments': {
+                'database': '<?php echo $LOGS_DATABASE ?>',
+                'key': key
+            },
+            'block': false,
+            'confirm': false,
+            'on_success': function(res){
+                window._DIAGNOSTICS_LOGS_DATA[key] = res['data']['value'];
+                // if ths is the last key
+                if (i == keys.length - 1) {
+                    success_fcn();
+                }
+            }
+        });
     });
 });
 
 $(document).on('ready', function(){
-    $('#_sel_version').trigger('changed.bs.select');
-    $('#_btn_add_log').trigger('click');
+    // fetch list of keys
+    smartAPI('data', 'list', {
+        'arguments': {
+            'database': '<?php echo $LOGS_DATABASE ?>'
+        },
+        'on_success': function(res){
+            window._DIAGNOSTICS_LOGS_KEYS = res['data']['keys'];
+            // trigger the changed event on the version selector in order to populate the group selector
+            $('#_sel_version').trigger('changed.bs.select');
+            // trigger click on add_log in order to consume keys loaded from _GET
+            $('#_btn_add_log').trigger('click');
+        },
+        'block': true,
+        'confirm': false
+    });
 });
 </script>

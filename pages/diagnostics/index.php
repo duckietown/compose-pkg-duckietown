@@ -41,20 +41,6 @@ if (!$res['success']) {
 }
 ?>
 
-<link
-    href="<?php echo Core::getCSSstylesheetURL('bootstrap-select.min.css') ?>"
-    rel="stylesheet"
->
-
-<script
-    src="<?php echo Core::getJSscriptURL('bootstrap-select.min.js') ?>"
-    type="text/javascript">
-</script>
-
-<script type="text/javascript">
-$.fn.selectpicker.Constructor.BootstrapVersion = '3';
-</script>
-
 <?php
 $tabs = [
     'logs' => [
@@ -80,6 +66,14 @@ $tabs = [
     'processes' => [
         'name' => 'Processes',
         'icon' => 'gears'
+    ],
+    'disk' => [
+        'name' => 'Disk',
+        'icon' => 'hdd-o'
+    ],
+    'network' => [
+        'name' => 'Network',
+        'icon' => 'exchange'
     ]
 ];
 ?>
