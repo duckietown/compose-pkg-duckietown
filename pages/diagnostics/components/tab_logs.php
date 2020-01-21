@@ -94,10 +94,6 @@ _logs_print_table_structure('_main_table');
 
 
 <script type="text/javascript">
-
-window._DIAGNOSTICS_LOGS_KEYS = [];
-window._DIAGNOSTICS_LOGS_DATA = {};
-
 $('#_sel_version').on('changed.bs.select', function(){
     let _ = undefined;
     let v = "<?php echo $LOGS_VERSION ?>";
@@ -214,26 +210,12 @@ function apply_keys(versions, groups, types, devices, stamps){
     $('#_sel_stamp').selectpicker('refresh');
 }
 
-function table_to_object(table_id){
-    var cols = [];
-    var result = [];
-    $('._logs_list{0}>tbody>tr>th'.format(table_id)).each(function(){
-        cols.push($(this).text().toLowerCase());
-    });
-    $('._logs_list{0}>tbody>tr'.format(table_id)).each(function(id){
-        var row = {};
-        if ($(this).find('td').length == 0) return;
-        $(this).find('td').each(function(index){
-            row[cols[index]] = $(this).text();
-        });
-        result.push(row);
-    });
-    return result;
-}
-
-function get_listed_logs(){
-    let tab_data = table_to_object('#_main_table');
-    return tab_data.map(e => e['_key']);
+function get_listed_logs(seek){
+    let tab_data = tableToObject('._logs_list#_main_table');
+    if (seek != undefined) {
+        return tab_data.map(e => e[seek]);
+    }
+    return tab_data;
 }
 
 $('#_btn_add_log').on('click', function(){
@@ -246,7 +228,7 @@ $('#_btn_add_log').on('click', function(){
     let _sel_keys = ($('#_sel_stamp').val() != null)? $('#_sel_stamp').val() : [];
     // get the list of keys already in the table
     let keys = Array.from(new Set(
-        get_listed_logs().concat(_sel_keys).concat(_get_keys)
+        get_listed_logs('_key').concat(_sel_keys).concat(_get_keys)
     ));
     // clear table
     $('._logs_list > tbody tr._row').remove();
@@ -286,29 +268,56 @@ $('#_btn_add_log').on('click', function(){
     $('#_sel_stamp').selectpicker('refresh');
 
 
-    // disable tabs
-    $('#_logs_tab_btns a').prop('disabled', true);
-    // enable fetch button
-    if (keys.length > 0){
-        $('#_btn_fetch_logs').prop('disabled', false);
-    }else{
-        $('#_btn_fetch_logs').prop('disabled', true);
-    }
+//     // disable tabs
+//     $('#_logs_tab_btns a').prop('disabled', true);
+//     // enable fetch button
+//     if (keys.length > 0){
+//         $('#_btn_fetch_logs').prop('disabled', false);
+//     }else{
+//         $('#_btn_fetch_logs').prop('disabled', true);
+//     }
 });
 
-$('#_btn_fetch_logs').on('click', function(){
+// $('#_btn_fetch_logs').on('click', function(){
+//     // get list of keys
+//     let keys = get_listed_logs('_key');
+//     if (keys.length <= 0) return;
+//     // define success function
+//     success_fcn = function(){
+//         hidePleaseWait();
+//         // show success dialog
+//         showSuccessDialog(500, function(){
+//             // enable tabs
+//             $('#_logs_tab_btns a').prop('disabled', false);
+//         });
+//     };
+//     // open PleaseWait dialog
+//     showPleaseWait();
+//     // fetch logs
+//     keys.forEach(function(key, i){
+//         smartAPI('data', 'get', {
+//             'arguments': {
+//                 'database': '<?php echo $LOGS_DATABASE ?>',
+//                 'key': key
+//             },
+//             'block': false,
+//             'confirm': false,
+//             'on_success': function(res){
+//                 window._DIAGNOSTICS_LOGS_DATA[key] = res['data']['value'];
+//                 // if ths is the last key
+//                 if (i == keys.length - 1) {
+//                     success_fcn();
+//                 }
+//             }
+//         });
+//     });
+// });
+
+function fetch_log_data(args){
     // get list of keys
-    let keys = get_listed_logs();
+    let keys = get_listed_logs('_key');
     if (keys.length <= 0) return;
-    // define success function
-    success_fcn = function(){
-        hidePleaseWait();
-        // show success dialog
-        showSuccessDialog(500, function(){
-            // enable tabs
-            $('#_logs_tab_btns a').prop('disabled', false);
-        });
-    };
+    let seek = args['seek'] || ''
     // open PleaseWait dialog
     showPleaseWait();
     // fetch logs
@@ -316,12 +325,13 @@ $('#_btn_fetch_logs').on('click', function(){
         smartAPI('data', 'get', {
             'arguments': {
                 'database': '<?php echo $LOGS_DATABASE ?>',
-                'key': key
+                'key': key,
+                'seek': seek
             },
             'block': false,
             'confirm': false,
             'on_success': function(res){
-                window._DIAGNOSTICS_LOGS_DATA[key] = res['data']['value'];
+                window._DIAGNOSTICS_LOGS_DATA[seek][key] = res['data']['value'];
                 // if ths is the last key
                 if (i == keys.length - 1) {
                     success_fcn();
@@ -329,7 +339,7 @@ $('#_btn_fetch_logs').on('click', function(){
             }
         });
     });
-});
+}
 
 $(document).on('ready', function(){
     // fetch list of keys

@@ -90,10 +90,14 @@ var _LOGS_SYS_BLOCK_TEMPLATE = `
   </div>
 </div>`;
 
+function render_single_log(){
+
+}
+
 // this gets executed when the tab gains focus
-let on_show = function(){
+let _tab_system_on_show = function(){
     // get logs list
-    let tab_data = table_to_object('#_main_table');
+    let tab_data = get_listed_logs();
     // render logs info
     tab_data.forEach(function(tab_row){
         let key = tab_row['_key'];
@@ -112,10 +116,10 @@ let on_show = function(){
 };
 
 // this gets executed when the tab loses focus
-let on_hide = function(){
+let _tab_system_on_hide = function(){
     $('#_logs_tab_system').empty();
 };
 
-$('#_logs_tab_btns a[href="#system"]').on('shown.bs.tab', on_show);
-$('#_logs_tab_btns a[href="#system"]').on('hidden.bs.tab', on_hide);
+$('#_logs_tab_btns a[href="#system"]').on('shown.bs.tab', _tab_system_on_show);
+$('#_logs_tab_btns a[href="#system"]').on('hidden.bs.tab', _tab_system_on_hide);
 </script>

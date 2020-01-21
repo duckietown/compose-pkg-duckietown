@@ -14,9 +14,8 @@ _logs_print_table_structure();
 
 
 <script type="text/javascript">
-
 // this gets executed when the tab gains focus
-let on_show = function(){
+let _tab_events_on_show = function(){
     // get logs list
     let tab_data = table_to_object('#_main_table');
     // render logs info
@@ -28,10 +27,10 @@ let on_show = function(){
 };
 
 // this gets executed when the tab loses focus
-let on_hide = function(){
+let _tab_events_on_hide = function(){
     $('#_logs_tab_events').empty();
 };
 
-$('#_logs_tab_btns a[href="#events"]').on('shown.bs.tab', on_show);
-$('#_logs_tab_btns a[href="#events"]').on('hidden.bs.tab', on_hide);
+$('#_logs_tab_btns a[href="#events"]').on('shown.bs.tab', _tab_events_on_show);
+$('#_logs_tab_btns a[href="#events"]').on('hidden.bs.tab', _tab_events_on_hide);
 </script>
