@@ -109,3 +109,7 @@ $tabs = [
     ?>
 </div>
 
+<script type="text/javascript">
+window._DIAGNOSTICS_LOGS_KEYS = [];
+window._DIAGNOSTICS_LOGS_DATA = {};
+</script>
