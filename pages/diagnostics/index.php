@@ -51,6 +51,10 @@ $tabs = [
         'name' => 'System',
         'icon' => 'microchip'
     ],
+    'resources' => [
+        'name' => 'Resources',
+        'icon' => 'tachometer'
+    ],
     'events' => [
         'name' => 'Events',
         'icon' => 'history'
@@ -112,4 +116,21 @@ $tabs = [
 <script type="text/javascript">
 window._DIAGNOSTICS_LOGS_KEYS = [];
 window._DIAGNOSTICS_LOGS_DATA = {};
+
+function get_chart_dataset(opts){
+    let gradient = opts['canvas'].get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
+    gradient.addColorStop(0, "rgba({0}, .6)".format(opts['color']));
+    gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+    // ---
+    let default_opts = {
+        backgroundColor: gradient,
+        borderColor: "rgba({0}, .8)".format(opts['color']),
+        pointRadius: 3,
+        pointBackgroundColor: '#fff',
+        borderWidth: 1,
+        fill: true
+    };
+    return {...default_opts, ...opts};
+}
 </script>

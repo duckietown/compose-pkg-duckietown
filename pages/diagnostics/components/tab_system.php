@@ -4,20 +4,21 @@ _logs_print_table_structure();
 /*
 Keys used from Log:
 
-    OSType
-    OperatingSystem
-    KernelVersion
-    Architecture
-    Name
-    SystemTime
-    mem} G
-    NCPU
-    ServerVersion
-    Images
-    Containers
-    ContainersRunning
-    ContainersPaused
-    ContainersStopped
+    endpoint:
+        OSType
+        OperatingSystem
+        KernelVersion
+        Architecture
+        Name
+        SystemTime
+        mem} G
+        NCPU
+        ServerVersion
+        Images
+        Containers
+        ContainersRunning
+        ContainersPaused
+        ContainersStopped
 
 */
 ?>
@@ -90,29 +91,25 @@ var _LOGS_SYS_BLOCK_TEMPLATE = `
   </div>
 </div>`;
 
-function render_single_log(){
-
+function _tab_system_render_single_log(key, seek){
+    let color = get_log_info(key, '_color');
+    color = 'rgba({0}, 0.6)'.format(color);
+    let log_data = window._DIAGNOSTICS_LOGS_DATA[key][seek];
+    let memGB = log_data['MemTotal'] / Math.pow(1000, 3);
+    let extra_info = {
+        'title': '<strong>Log: </strong>{0}'.format(key),
+        'color': color,
+        'mem': Math.round(memGB, 2)
+    };
+    $('#_logs_tab_system').append(
+        _LOGS_SYS_BLOCK_TEMPLATE.format({...log_data, ...extra_info})
+    );
 }
 
 // this gets executed when the tab gains focus
 let _tab_system_on_show = function(){
-    // get logs list
-    let tab_data = get_listed_logs();
-    // render logs info
-    tab_data.forEach(function(tab_row){
-        let key = tab_row['_key'];
-        let color = 'rgba({0}, 0.8)'.format(tab_row['_color'].slice(4, -1));
-        let log_data = window._DIAGNOSTICS_LOGS_DATA[key];
-        let memGB = log_data['endpoint']['MemTotal'] / Math.pow(1000, 3);
-        let extra_info = {
-            'title': '<strong>Log: </strong>{0}'.format(key),
-            'color': color,
-            'mem': Math.round(memGB, 2)
-        };
-        $('#_logs_tab_system').append(
-            _LOGS_SYS_BLOCK_TEMPLATE.format({...log_data['endpoint'], ...extra_info})
-        );
-    });
+    let seek = '/endpoint';
+    fetch_log_data(seek, _tab_system_render_single_log);
 };
 
 // this gets executed when the tab loses focus

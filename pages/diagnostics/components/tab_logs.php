@@ -218,6 +218,16 @@ function get_listed_logs(seek){
     return tab_data;
 }
 
+function get_log_info(key, param){
+    let tab_data = get_listed_logs();
+    for (let i = 0; i < tab_data.length; i++) {
+        let tab_row = tab_data[i];
+        if (tab_row['_key'] == key){
+            return tab_row[param];
+        }
+    }
+}
+
 $('#_btn_add_log').on('click', function(){
     let _get_keys = [
         <?php
@@ -258,7 +268,7 @@ $('#_btn_add_log').on('click', function(){
                 <td>{5}</td>
                 <td>{6}</td>
             </tr>`.format(
-                k, window.chartColors[colors[c_i]], _color(c_i), _g, _t, _d, _dt
+                k, window.chartColors[colors[c_i]].slice(4, -1), _color(c_i), _g, _t, _d, _dt
             )
         );
     });
@@ -266,62 +276,40 @@ $('#_btn_add_log').on('click', function(){
     $('#_sel_stamp').val([]);
     $('#_sel_stamp').trigger('changed.bs.select');
     $('#_sel_stamp').selectpicker('refresh');
-
-
-//     // disable tabs
-//     $('#_logs_tab_btns a').prop('disabled', true);
-//     // enable fetch button
-//     if (keys.length > 0){
-//         $('#_btn_fetch_logs').prop('disabled', false);
-//     }else{
-//         $('#_btn_fetch_logs').prop('disabled', true);
-//     }
+    // pull general info about the log
+    fetch_log_data('/general');
 });
 
-// $('#_btn_fetch_logs').on('click', function(){
-//     // get list of keys
-//     let keys = get_listed_logs('_key');
-//     if (keys.length <= 0) return;
-//     // define success function
-//     success_fcn = function(){
-//         hidePleaseWait();
-//         // show success dialog
-//         showSuccessDialog(500, function(){
-//             // enable tabs
-//             $('#_logs_tab_btns a').prop('disabled', false);
-//         });
-//     };
-//     // open PleaseWait dialog
-//     showPleaseWait();
-//     // fetch logs
-//     keys.forEach(function(key, i){
-//         smartAPI('data', 'get', {
-//             'arguments': {
-//                 'database': '<?php echo $LOGS_DATABASE ?>',
-//                 'key': key
-//             },
-//             'block': false,
-//             'confirm': false,
-//             'on_success': function(res){
-//                 window._DIAGNOSTICS_LOGS_DATA[key] = res['data']['value'];
-//                 // if ths is the last key
-//                 if (i == keys.length - 1) {
-//                     success_fcn();
-//                 }
-//             }
-//         });
-//     });
-// });
-
-function fetch_log_data(args){
+function fetch_log_data(seek, on_step, on_success){
     // get list of keys
     let keys = get_listed_logs('_key');
     if (keys.length <= 0) return;
-    let seek = args['seek'] || ''
-    // open PleaseWait dialog
-    showPleaseWait();
+    // get args
+    let _on_step_fcn = on_step || function(){};
+    let _on_success_fcn = on_success || function(){};
+    // create destinations
+    let to_load = 0;
+    keys.forEach(function(key) {
+        if (!window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(key)) {
+            window._DIAGNOSTICS_LOGS_DATA[key] = {};
+            to_load += 1;
+        }
+    });
+    if (to_load > 0){
+        // open PleaseWait dialog
+        showPleaseWait();
+    }
     // fetch logs
     keys.forEach(function(key, i){
+        if (window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(key) && window._DIAGNOSTICS_LOGS_DATA[key].hasOwnProperty(seek)) {
+            // run step success function
+            _on_step_fcn(key, seek, i, keys.length);
+            // if ths is the last key
+            if (i === keys.length - 1) {
+                _on_success_fcn(seek);
+            }
+            return;
+        }
         smartAPI('data', 'get', {
             'arguments': {
                 'database': '<?php echo $LOGS_DATABASE ?>',
@@ -331,10 +319,12 @@ function fetch_log_data(args){
             'block': false,
             'confirm': false,
             'on_success': function(res){
-                window._DIAGNOSTICS_LOGS_DATA[seek][key] = res['data']['value'];
+                window._DIAGNOSTICS_LOGS_DATA[key][seek] = res['data']['value'];
+                // run step success function
+                _on_step_fcn(key, seek, i, keys.length);
                 // if ths is the last key
-                if (i == keys.length - 1) {
-                    success_fcn();
+                if (i === keys.length - 1) {
+                    _on_success_fcn();
                 }
             }
         });
