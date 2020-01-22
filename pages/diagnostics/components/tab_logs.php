@@ -280,7 +280,10 @@ $('#_btn_add_log').on('click', function(){
     fetch_log_data('/general');
 });
 
-function fetch_log_data(seek, on_step, on_success){
+function fetch_log_data(seeks, on_step, on_success){
+    // arguments
+    if (!Array.isArray(seeks))
+        seeks = [seeks];
     // get list of keys
     let keys = get_listed_logs('_key');
     if (keys.length <= 0) return;
@@ -288,47 +291,52 @@ function fetch_log_data(seek, on_step, on_success){
     let _on_step_fcn = on_step || function(){};
     let _on_success_fcn = on_success || function(){};
     // create destinations
-    let to_load = 0;
+    let to_load = [];
     keys.forEach(function(key) {
-        if (!window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(key)) {
-            window._DIAGNOSTICS_LOGS_DATA[key] = {};
-            to_load += 1;
-        }
-    });
-    if (to_load > 0){
-        // open PleaseWait dialog
-        showPleaseWait();
-    }
-    // fetch logs
-    keys.forEach(function(key, i){
-        if (window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(key) && window._DIAGNOSTICS_LOGS_DATA[key].hasOwnProperty(seek)) {
-            // run step success function
-            _on_step_fcn(key, seek, i, keys.length);
-            // if ths is the last key
-            if (i === keys.length - 1) {
-                _on_success_fcn(seek);
+        seeks.forEach(function(seek){
+            if (!window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(key)) {
+                window._DIAGNOSTICS_LOGS_DATA[key] = {};
             }
-            return;
+            to_load.push({key: key, seek: seek});
+        });
+    });
+    // define task function
+    let _fetch = function(queue){
+        // base case, nothing left in the queue
+        if (queue.length === 0){
+            hidePleaseWait();
+            return _on_success_fcn();
         }
+        // get next element from queue
+        let job = queue.pop();
+        // base case, nothing to do
+        if (window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(job.key) &&
+            window._DIAGNOSTICS_LOGS_DATA[job.key].hasOwnProperty(job.seek)) {
+            // run step success function
+            _on_step_fcn(job.key, job.seek);
+            // move to the next job
+            return _fetch(queue);
+        }
+        showPleaseWait();
         smartAPI('data', 'get', {
             'arguments': {
                 'database': '<?php echo $LOGS_DATABASE ?>',
-                'key': key,
-                'seek': seek
+                'key': job.key,
+                'seek': job.seek
             },
             'block': false,
             'confirm': false,
-            'on_success': function(res){
-                window._DIAGNOSTICS_LOGS_DATA[key][seek] = res['data']['value'];
+            'on_success': function (res) {
+                window._DIAGNOSTICS_LOGS_DATA[job.key][job.seek] = res['data']['value'];
                 // run step success function
-                _on_step_fcn(key, seek, i, keys.length);
-                // if ths is the last key
-                if (i === keys.length - 1) {
-                    _on_success_fcn();
-                }
+                _on_step_fcn(job.key, job.seek);
+                // move to the next job
+                return _fetch(queue);
             }
         });
-    });
+    };
+    // start queue
+    _fetch(to_load);
 }
 
 $(document).on('ready', function(){
