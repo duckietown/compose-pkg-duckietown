@@ -22,8 +22,8 @@ Keys used from Log:
     <h4>Events:</h4>
     <table id="_events_table" class="table table-striped table-condensed text-center">
         <tr>
-          <th class="col-md-1 text-center">Time</th>
-          <th class="col-md-3 text-center">Absolute Time</th>
+          <th class="col-md-2 text-center">Time</th>
+          <th class="col-md-2 text-center">Absolute Time</th>
           <th class="col-md-3 text-center">Event type</th>
           <th class="col-md-5 text-center">Event data</th>
         </tr>
@@ -39,7 +39,7 @@ function _tab_events_render_all(){
     let keys = get_listed_logs('_key');
     keys.forEach(function(key){
         let color = get_log_info(key, '_color');
-        color = 'rgba({0}, 0.5)'.format(color);
+        color = 'rgba({0}, 0.4)'.format(color);
         let log_evts = window._DIAGNOSTICS_LOGS_DATA[key]['/events'];
         let log_containers = window._DIAGNOSTICS_LOGS_DATA[key]['/containers'];
         log_evts.forEach(function(evt){
@@ -60,8 +60,8 @@ function _tab_events_render_all(){
         // render events
         $('#_logs_tab_events #_events_table').append(`
             <tr class="_event_row" style="background-color: {color}">
-              <td class="col-md-1">{rel_time} s</td>
-              <td class="col-md-3">{abs_time}</td>
+              <td class="col-md-2">T +{rel_time} s</td>
+              <td class="col-md-2">{abs_time}</td>
               <td class="col-md-3">{event_type}</td>
               <td class="col-md-5 text-left">{event_data}</td>
             </tr>

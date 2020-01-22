@@ -352,7 +352,7 @@ $(document).on('ready', function(){
             // trigger click on add_log in order to consume keys loaded from _GET
             $('#_btn_add_log').trigger('click');
         },
-        'block': true,
+        'block': false,
         'confirm': false
     });
 });
