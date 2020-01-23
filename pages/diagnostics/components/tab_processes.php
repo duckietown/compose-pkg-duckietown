@@ -84,6 +84,7 @@ function _tab_processes_render_single_log(key, seek){
     let log_data = window._DIAGNOSTICS_LOGS_DATA[key][seek];
     let log_containers = window._DIAGNOSTICS_LOGS_DATA[key]['/containers'];
     let start_time = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].time;
+    let duration = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].duration;
     // aggregate data
     let data = {};
     log_data.forEach(function(proc){
@@ -97,7 +98,6 @@ function _tab_processes_render_single_log(key, seek){
                 pid: PID,
                 command: proc['command'],
                 time: [],
-                rel_time: [],
                 pcpu: [],
                 cputime: [],
                 pmem: [],
@@ -107,7 +107,6 @@ function _tab_processes_render_single_log(key, seek){
         }
         // add temporal data
         data[PID].time.push(proc['time']);
-        data[PID].rel_time.push(parseInt(proc['time'] - start_time));
         data[PID].pcpu.push(parseFloat(proc['pcpu']));
         data[PID].cputime.push(proc['cputime']);
         data[PID].pmem.push(parseFloat(proc['pmem']));
@@ -126,7 +125,7 @@ function _tab_processes_render_single_log(key, seek){
         new Chart(cpu_canvas, {
             type: 'line',
             data: {
-                labels: proc_data.rel_time,
+                labels: range(0, duration, 5),
                 datasets: [
                     get_chart_dataset({
                         canvas: cpu_canvas,

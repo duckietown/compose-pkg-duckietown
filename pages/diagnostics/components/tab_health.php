@@ -103,7 +103,7 @@ function _tab_health_render_single_log(key, seek){
     new Chart(temp_canvas, {
         type: 'line',
         data: {
-            labels: range(0, duration),
+            labels: range(0, Math.max(duration, ...temp.map(e => e.x))),
             datasets: [
                 get_chart_dataset({
                     canvas: temp_canvas,

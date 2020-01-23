@@ -300,11 +300,14 @@ function fetch_log_data(seeks, on_step, on_success){
             to_load.push({key: key, seek: seek});
         });
     });
+    let total = to_load.length;
+    window._DIAGNOSTICS_LOADING_PROGRESS = 1;
+    let _pbar_next = function(q){return 100 * (total - q.length) / total};
     // define task function
     let _fetch = function(queue){
         // base case, nothing left in the queue
         if (queue.length === 0){
-            hidePleaseWait();
+            window._DIAGNOSTICS_LOADING_PROGRESS = 100;
             return _on_success_fcn();
         }
         // get next element from queue
@@ -314,22 +317,29 @@ function fetch_log_data(seeks, on_step, on_success){
             window._DIAGNOSTICS_LOGS_DATA[job.key].hasOwnProperty(job.seek)) {
             // run step success function
             _on_step_fcn(job.key, job.seek);
+            // update progress bar
+            window._DIAGNOSTICS_LOADING_PROGRESS = _pbar_next(queue);
             // move to the next job
             return _fetch(queue);
         }
-        showPleaseWait();
+        // get extra info
+        let api_info = JSON.parse('<?php echo json_encode($api_info) ?>');
+        // call API
         smartAPI('data', 'get', {
             'arguments': {
-                'database': '<?php echo $LOGS_DATABASE ?>',
+                'database': '<?php echo $logs_db_name ?>',
                 'key': job.key,
                 'seek': job.seek
             },
             'block': false,
             'confirm': false,
+            ...api_info,
             'on_success': function (res) {
                 window._DIAGNOSTICS_LOGS_DATA[job.key][job.seek] = res['data']['value'];
                 // run step success function
                 _on_step_fcn(job.key, job.seek);
+                // update progress bar
+                window._DIAGNOSTICS_LOADING_PROGRESS = _pbar_next(queue);
                 // move to the next job
                 return _fetch(queue);
             }
@@ -340,20 +350,26 @@ function fetch_log_data(seeks, on_step, on_success){
 }
 
 $(document).on('ready', function(){
+    window._DIAGNOSTICS_LOADING_PROGRESS = 1;
+    // get extra info
+    let api_info = JSON.parse('<?php echo json_encode($api_info) ?>');
     // fetch list of keys
     smartAPI('data', 'list', {
         'arguments': {
-            'database': '<?php echo $LOGS_DATABASE ?>'
+            'database': '<?php echo $logs_db_name ?>'
         },
+        'block': false,
+        'confirm': false,
+        ...api_info,
         'on_success': function(res){
             window._DIAGNOSTICS_LOGS_KEYS = res['data']['keys'];
             // trigger the changed event on the version selector in order to populate the group selector
             $('#_sel_version').trigger('changed.bs.select');
             // trigger click on add_log in order to consume keys loaded from _GET
             $('#_btn_add_log').trigger('click');
-        },
-        'block': false,
-        'confirm': false
+            // update progress bar
+            window._DIAGNOSTICS_LOADING_PROGRESS = 100;
+        }
     });
 });
 </script>

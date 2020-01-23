@@ -2,21 +2,35 @@
 use \system\classes\Core;
 use \system\packages\data\Data;
 
-$LOGS_DATABASE = "db_log_default";
 $LOGS_VERSION = "v1";
+
+$logs_db_host = Core::getSetting('logs_db_host', 'duckietown');
+$logs_db_name = Core::getSetting('logs_db_name', 'duckietown');
+$db_app_id = Core::getSetting('db_app_id', 'duckietown');
+$db_app_secret = Core::getSetting('db_app_secret', 'duckietown');
+
+$api_info = [];
+if (strlen($logs_db_host) > 0) {
+    $api_info['host'] = $logs_db_host;
+}
+if (strlen($db_app_id) > 0 && strlen($db_app_secret) > 0) {
+    $api_info['auth'] = [
+        'app_id' => $db_app_id,
+        'app_secret' => $db_app_secret
+    ];
+}
 ?>
 
-<table style="width:100%; border-bottom:1px solid #ddd; margin-bottom:32px">
-    <tr>
+<table style="width:100%; margin-bottom:32px">
+    <tr style="border-bottom:1px solid #ddd; ">
       <td style="width:100%">
         <h2>Diagnostics</h2>
       </td>
     </tr>
     <tr>
-      <td style="width:100%">
-        <div class="progress">
-          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
-            <span class="sr-only">45% Complete</span>
+      <td style="width: 100%; padding-top: 6px">
+        <div class="_logs_progress_bar progress" style="height: 12px; display: none">
+          <div class="_logs_progress_bar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
           </div>
         </div>
       </td>
@@ -43,7 +57,7 @@ $LOGS_VERSION = "v1";
 </style>
 
 <?php
-$res = Data::list($LOGS_DATABASE);
+$res = Data::list($logs_db_name);
 if (!$res['success']) {
     echo sprintf('<h3 class="text-center">ERROR: %s</h3>', $res['data']);
     return;
@@ -125,6 +139,7 @@ $tabs = [
 <script type="text/javascript">
 window._DIAGNOSTICS_LOGS_KEYS = [];
 window._DIAGNOSTICS_LOGS_DATA = {};
+window._DIAGNOSTICS_LOADING_PROGRESS = 0;
 
 function get_chart_dataset(opts){
     let gradient = opts['canvas'].get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
@@ -142,4 +157,26 @@ function get_chart_dataset(opts){
     };
     return {...default_opts, ...opts};
 }
+
+function _update_progress_bar(){
+    let perc = window._DIAGNOSTICS_LOADING_PROGRESS;
+    let pbar = $('._logs_progress_bar.progress');
+    let pbar_progress = $('._logs_progress_bar.progress-bar');
+    if (perc <= 0 && pbar.css('display') === 'none') return;
+    pbar.css('display', 'block');
+    perc = Math.max(0, Math.min(100, perc));
+    pbar_progress.css('width', '{0}%'.format(perc));
+    if (perc >= 100) {
+        setTimeout(function(){
+            if (window._DIAGNOSTICS_LOADING_PROGRESS >= 100) {
+                window._DIAGNOSTICS_LOADING_PROGRESS = 0;
+                pbar.css('display', 'none');
+            }
+        }, 1000);
+    }
+}
+
+$(document).on('ready', function(){
+    setInterval(_update_progress_bar, 500);
+});
 </script>
