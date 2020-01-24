@@ -65,7 +65,7 @@
 <br/>
 
 <?php
-function _logs_print_table_structure($id = null, $read_only = false) {
+function _logs_print_table_structure($id = null, $read_only = true) {
     $id_str = is_null($id)? '' : sprintf('id="%s"', $id);
     ?>
     <h4>Selected logs:</h4>
@@ -74,23 +74,18 @@ function _logs_print_table_structure($id = null, $read_only = false) {
           <th style="display:none">_key</th>
           <th style="display:none">_color</th>
           <th class="col-md-1 text-center">Color</th>
-          <th class="col-md-3 text-center">Group</th>
+          <th class="col-md-2 text-center">Group</th>
           <th class="col-md-2 text-center">Type</th>
           <th class="col-md-3 text-center">Device</th>
           <th class="col-md-3 text-center">Time</th>
+          <th class="col-md-1 text-center">Actions</th>
         </tr>
     </table>
     <?php
 }
 
-_logs_print_table_structure('_main_table');
+_logs_print_table_structure('_main_table', false);
 ?>
-
-
-<button type="button" id="_btn_fetch_logs" class="btn btn-primary" style="float: right" disabled>
-    <span class="fa fa-download" aria-hidden="true"></span>
-    Fetch logs
-</button>
 
 
 <script type="text/javascript">
@@ -228,18 +223,7 @@ function get_log_info(key, param){
     }
 }
 
-$('#_btn_add_log').on('click', function(){
-    let _get_keys = [
-        <?php
-        $_get_keys = array_key_exists('keys', $_GET)? explode(',', $_GET['keys']) : '';
-        echo implode(', ', array_map(function($k){return sprintf('"%s"', $k);}, $_get_keys));
-        ?>
-    ];
-    let _sel_keys = ($('#_sel_stamp').val() != null)? $('#_sel_stamp').val() : [];
-    // get the list of keys already in the table
-    let keys = Array.from(new Set(
-        get_listed_logs('_key').concat(_sel_keys).concat(_get_keys)
-    ));
+function _populate_table(keys){
     // clear table
     $('._logs_list > tbody tr._row').remove();
     // get colors
@@ -267,18 +251,49 @@ $('#_btn_add_log').on('click', function(){
                 <td>{4}</td>
                 <td>{5}</td>
                 <td>{6}</td>
+                <td>
+                    <a href="#" role="button" class="_log_row_{0} btn btn-default" onclick="_rm_log('{0}')">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true" style="color: darkred"></span>
+                    </a>
+                </td>
             </tr>`.format(
                 k, window.chartColors[colors[c_i]].slice(4, -1), _color(c_i), _g, _t, _d, _dt
             )
         );
     });
+    // store keys
+    localStorage.setItem('_LOGS_SELECTED_KEYS', keys);
+    // pull general info about the logs
+    fetch_log_data('/general', undefined, _update_duration);
+}
+
+function _refresh_table(){
+    _populate_table(get_listed_logs('_key'));
+}
+
+$('#_btn_add_log').on('click', function(){
+    let _sel_keys = ($('#_sel_stamp').val() != null)? $('#_sel_stamp').val() : [];
+    // get the list of keys already in the table
+    let keys = Array.from(new Set(
+        get_listed_logs('_key').concat(_sel_keys)
+    ));
+    // populate table
+    _populate_table(keys);
     // clear stamps selection
     $('#_sel_stamp').val([]);
     $('#_sel_stamp').trigger('changed.bs.select');
     $('#_sel_stamp').selectpicker('refresh');
-    // pull general info about the log
-    fetch_log_data('/general');
 });
+
+function _rm_log(key){
+    // remove row
+    $('._log_row_{0}'.format(key)).closest('tr').remove();
+    //refresh current tab
+    $('#_logs_tab_btns li.active a').trigger('hidden.bs.tab');
+    $('#_logs_tab_btns li.active a').trigger('shown.bs.tab');
+    // refresh table
+    _refresh_table();
+}
 
 function fetch_log_data(seeks, on_step, on_success){
     // arguments
@@ -296,13 +311,18 @@ function fetch_log_data(seeks, on_step, on_success){
         seeks.forEach(function(seek){
             if (!window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(key)) {
                 window._DIAGNOSTICS_LOGS_DATA[key] = {};
+            }else if (window._DIAGNOSTICS_LOGS_DATA[key].hasOwnProperty(seek)) {
+                console.log('Using cached {0} : {1}'.format(key, seek));
             }
             to_load.push({key: key, seek: seek});
         });
     });
     let total = to_load.length;
-    window._DIAGNOSTICS_LOADING_PROGRESS = 1;
     let _pbar_next = function(q){return 100 * (total - q.length) / total};
+    if (total <= 0){
+        return;
+    }
+    window._DIAGNOSTICS_LOADING_PROGRESS = 1;
     // define task function
     let _fetch = function(queue){
         // base case, nothing left in the queue
@@ -316,7 +336,8 @@ function fetch_log_data(seeks, on_step, on_success){
         if (window._DIAGNOSTICS_LOGS_DATA.hasOwnProperty(job.key) &&
             window._DIAGNOSTICS_LOGS_DATA[job.key].hasOwnProperty(job.seek)) {
             // run step success function
-            _on_step_fcn(job.key, job.seek);
+            let i = total - queue.length;
+            _on_step_fcn(job.key, job.seek, i, total);
             // update progress bar
             window._DIAGNOSTICS_LOADING_PROGRESS = _pbar_next(queue);
             // move to the next job
@@ -335,9 +356,11 @@ function fetch_log_data(seeks, on_step, on_success){
             'confirm': false,
             ...api_info,
             'on_success': function (res) {
+                console.log('Loaded {key} : {seek}'.format(job));
                 window._DIAGNOSTICS_LOGS_DATA[job.key][job.seek] = res['data']['value'];
                 // run step success function
-                _on_step_fcn(job.key, job.seek);
+                let i = total - queue.length;
+                _on_step_fcn(job.key, job.seek, i, total);
                 // update progress bar
                 window._DIAGNOSTICS_LOADING_PROGRESS = _pbar_next(queue);
                 // move to the next job
@@ -347,6 +370,18 @@ function fetch_log_data(seeks, on_step, on_success){
     };
     // start queue
     _fetch(to_load);
+}
+
+function _update_duration(){
+    get_listed_logs('_key').forEach(function(key){
+        let duration = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].duration;
+        window._DIAGNOSTICS_LOGS_DURATION = Math.max(
+            window._DIAGNOSTICS_LOGS_DURATION, duration
+        );
+        window._DIAGNOSTICS_LOGS_X_RANGE = range(
+            0, window._DIAGNOSTICS_LOGS_DURATION, window._DIAGNOSTICS_LOGS_X_RESOLUTION
+        );
+    });
 }
 
 $(document).on('ready', function(){
@@ -365,8 +400,21 @@ $(document).on('ready', function(){
             window._DIAGNOSTICS_LOGS_KEYS = res['data']['keys'];
             // trigger the changed event on the version selector in order to populate the group selector
             $('#_sel_version').trigger('changed.bs.select');
-            // trigger click on add_log in order to consume keys loaded from _GET
-            $('#_btn_add_log').trigger('click');
+            // get cached keys
+            let cached_keys = localStorage.getItem('_LOGS_SELECTED_KEYS') || [];
+            if (!Array.isArray(cached_keys)) cached_keys = cached_keys.split(',');
+            let get_keys = [
+                <?php
+                $_get_keys = array_key_exists('keys', $_GET)? explode(',', $_GET['keys']) : '';
+                echo implode(', ', array_map(function($k){return sprintf('"%s"', $k);}, $_get_keys));
+                ?>
+            ];
+            if (get_keys.length > 0) {
+                cached_keys = [];
+            }
+            let keys = Array.from(new Set(cached_keys.concat(get_keys)));
+            // populate table
+            _populate_table(keys);
             // update progress bar
             window._DIAGNOSTICS_LOADING_PROGRESS = 100;
         }

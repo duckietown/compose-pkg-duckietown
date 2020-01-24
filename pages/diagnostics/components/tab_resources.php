@@ -48,7 +48,7 @@ function _tab_resources_render_single_log(key, seek){
     new Chart(cpu_canvas, {
         type: 'line',
         data: {
-            labels: range(0, duration),
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
             datasets: [
                 get_chart_dataset({
                     canvas: cpu_canvas,
@@ -73,6 +73,13 @@ function _tab_resources_render_single_log(key, seek){
                             display: false
                         }
                     }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
+                        }
+                    }
                 ]
             }
         }
@@ -84,7 +91,7 @@ function _tab_resources_render_single_log(key, seek){
     new Chart(ram_canvas, {
         type: 'line',
         data: {
-            labels: range(0, duration),
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
             datasets: [
                 get_chart_dataset({
                     canvas: ram_canvas,
@@ -107,6 +114,13 @@ function _tab_resources_render_single_log(key, seek){
                         },
                         gridLines: {
                             display: false
+                        }
+                    }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
                         }
                     }
                 ]

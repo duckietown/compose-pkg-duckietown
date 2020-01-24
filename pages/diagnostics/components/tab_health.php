@@ -67,7 +67,7 @@ function _tab_health_render_single_log(key, seek){
     new Chart(status_canvas, {
         type: 'line',
         data: {
-            labels: range(0, duration),
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
             datasets: [
                 get_chart_dataset({
                     canvas: status_canvas,
@@ -92,6 +92,13 @@ function _tab_health_render_single_log(key, seek){
                             display: false
                         }
                     }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
+                        }
+                    }
                 ]
             }
         }
@@ -103,7 +110,7 @@ function _tab_health_render_single_log(key, seek){
     new Chart(temp_canvas, {
         type: 'line',
         data: {
-            labels: range(0, Math.max(duration, ...temp.map(e => e.x))),
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
             datasets: [
                 get_chart_dataset({
                     canvas: temp_canvas,
@@ -122,10 +129,17 @@ function _tab_health_render_single_log(key, seek){
                                 return label.toFixed(0)+' \'C';
                             },
                             min: 30,
-                            max: 70
+                            max: 80
                         },
                         gridLines: {
                             display: false
+                        }
+                    }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
                         }
                     }
                 ]
@@ -139,7 +153,7 @@ function _tab_health_render_single_log(key, seek){
     new Chart(cpu_volt_canvas, {
         type: 'line',
         data: {
-            labels: range(0, duration),
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
             datasets: [
                 get_chart_dataset({
                     canvas: cpu_volt_canvas,
@@ -164,6 +178,13 @@ function _tab_health_render_single_log(key, seek){
                             display: false
                         }
                     }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
+                        }
+                    }
                 ]
             }
         }
@@ -175,7 +196,7 @@ function _tab_health_render_single_log(key, seek){
     new Chart(ram_volt_canvas, {
         type: 'line',
         data: {
-            labels: range(0, duration),
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
             datasets: [
                 get_chart_dataset({
                     canvas: ram_volt_canvas,
@@ -198,6 +219,13 @@ function _tab_health_render_single_log(key, seek){
                         },
                         gridLines: {
                             display: false
+                        }
+                    }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
                         }
                     }
                 ]

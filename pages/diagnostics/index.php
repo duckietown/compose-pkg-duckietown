@@ -140,15 +140,23 @@ $tabs = [
 window._DIAGNOSTICS_LOGS_KEYS = [];
 window._DIAGNOSTICS_LOGS_DATA = {};
 window._DIAGNOSTICS_LOADING_PROGRESS = 0;
+window._DIAGNOSTICS_LOGS_DURATION = 0;
+window._DIAGNOSTICS_LOGS_X_RESOLUTION = 1;
+window._DIAGNOSTICS_LOGS_X_RANGE = [];
 
 function get_chart_dataset(opts){
     let gradient = opts['canvas'].get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
     gradient.addColorStop(0, "rgba({0}, .6)".format(opts['color']));
     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
     gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+    // opts['data'] = opts['data'].filter(p => (p.x <= window._DIAGNOSTICS_LOGS_DURATION));
+    opts['data'] = opts['data'].map(function(p){return {
+        x: Math.min(p.x, window._DIAGNOSTICS_LOGS_DURATION),
+        y: p.y
+    }});
     // ---
     let default_opts = {
-        backgroundColor: gradient,
+        backgroundColor: opts['no_background']? 'rgba(0, 0, 0, 0)' : gradient,
         borderColor: "rgba({0}, .8)".format(opts['color']),
         pointRadius: 3,
         pointBackgroundColor: '#fff',
@@ -156,6 +164,15 @@ function get_chart_dataset(opts){
         fill: true
     };
     return {...default_opts, ...opts};
+}
+
+function format_time(secs){
+    let parts = [];
+    if (secs > 59)
+        parts.push('{0}m'.format(Math.floor(secs / 60)));
+    if (secs % 60 !== 0 || secs === 0)
+        parts.push('{0}s'.format(secs % 60));
+    return parts.join(' ');
 }
 
 function _update_progress_bar(){
