@@ -30,7 +30,7 @@ if (strlen($db_app_id) > 0 && strlen($db_app_secret) > 0) {
     <tr>
       <td style="width: 100%; padding-top: 6px">
         <div class="_logs_progress_bar progress" style="height: 12px; display: none">
-          <div class="_logs_progress_bar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="_logs_progress_bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
           </div>
         </div>
       </td>

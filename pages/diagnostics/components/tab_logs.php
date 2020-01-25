@@ -289,10 +289,14 @@ function _rm_log(key){
     // remove row
     $('._log_row_{0}'.format(key)).closest('tr').remove();
     //refresh current tab
-    $('#_logs_tab_btns li.active a').trigger('hidden.bs.tab');
-    $('#_logs_tab_btns li.active a').trigger('shown.bs.tab');
+    refresh_current_tab();
     // refresh table
     _refresh_table();
+}
+
+function refresh_current_tab(){
+    $('#_logs_tab_btns li.active a').trigger('hidden.bs.tab');
+    $('#_logs_tab_btns li.active a').trigger('shown.bs.tab');
 }
 
 function fetch_log_data(seeks, on_step, on_success){
