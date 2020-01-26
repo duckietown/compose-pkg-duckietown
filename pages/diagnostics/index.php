@@ -21,14 +21,14 @@ if (strlen($db_app_id) > 0 && strlen($db_app_secret) > 0) {
 }
 ?>
 
-<table style="width:100%; margin-bottom:32px">
+<table style="width:100%; margin-bottom:10px">
     <tr style="border-bottom:1px solid #ddd; ">
       <td style="width:100%">
         <h2>Diagnostics</h2>
       </td>
     </tr>
     <tr>
-      <td style="width: 100%; padding-top: 6px">
+      <td style="width: 100%; padding-top: 6px; height: 40px">
         <div class="_logs_progress_bar progress" style="height: 12px; display: none">
           <div class="_logs_progress_bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
           </div>
@@ -145,7 +145,7 @@ window._DIAGNOSTICS_LOGS_X_RESOLUTION = 1;
 window._DIAGNOSTICS_LOGS_X_RANGE = [];
 
 function get_chart_dataset(opts){
-    let gradient = opts['canvas'].get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
+    let gradient = $('<canvas/>').get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
     gradient.addColorStop(0, "rgba({0}, .6)".format(opts['color']));
     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
     gradient.addColorStop(1, "rgba(255, 255, 255, 0)");

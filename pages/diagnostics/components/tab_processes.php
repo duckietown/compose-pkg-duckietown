@@ -178,7 +178,7 @@ let _LOGS_PROCESS_BLOCK_TEMPLATE = `
                       <dt>Container</dt>
                       <dd>{container_name}</dd>
                       <dt>Process</dt>
-                      <dd>{process_name}</dd>
+                      <dd>{process_name_str}</dd>
                     </dl>
                 </div>
 
@@ -202,17 +202,19 @@ let _LOGS_PROCESS_BLOCK_TEMPLATE = `
             </td>
         </tr>
         <tr>
-            <td>
-                <div class="input-group">
-                  <span class="input-group-addon" style="background-color: {command_color}"><strong>Command</strong></span>
-                    <div class="_proc_command">{command}</div>
-                </div>
-            </td>
+            <td id="_log{log_i}_pid{pid}_command_container"></td>
         </tr>
     </table>
 
   </div>
 </div>`;
+
+let _LOG_PROCESS_COMMAND_TEMPLATE = `
+<div class="input-group" style="margin-top: 12px">
+  <span class="input-group-addon" style="background-color: {command_color}"><strong>Command</strong></span>
+    <div class="_proc_command">{command}</div>
+</div>
+`;
 
 let _LOG_PROCESS_FILTER_DEFAULT_VALUES = {
   pcpu: [0, 100],
@@ -271,6 +273,17 @@ function _tab_processes_render_single_log(key, seek, log_i){
     log_data.forEach(function(proc){
         let PID = proc['pid'];
         let process_name = _find_process_name(proc['command']);
+        let charts = {
+            'pcpu': null,
+            'pmem': null,
+            'nthreads': null,
+            'command': null
+        };
+        let append = false;
+        if (condense_plots && _LOG_PROGRESS_PROC_GROUPS.hasOwnProperty(process_name)) {
+            charts = _LOG_PROGRESS_PROC_GROUPS[process_name];
+            append = true;
+        }
         if (!data.hasOwnProperty(PID)) {
             data[PID] = {
                 log: key,
@@ -278,7 +291,8 @@ function _tab_processes_render_single_log(key, seek, log_i){
                 panel_color: condense_plots? '' : 'rgba({0}, 0.4)'.format(color),
                 command_color: condense_plots ? 'rgba({0}, 0.5)'.format(color) : '#eee',
                 container_name: log_containers[proc['container']],
-                process_name: process_name? '<strong>'+process_name+'</strong>' : '(check command below)',
+                process_name: process_name,
+                process_name_str: process_name? '<strong>'+process_name+'</strong>' : '(check command below)',
                 container: proc['container'],
                 ppid: proc['ppid'],
                 pid: PID,
@@ -288,7 +302,9 @@ function _tab_processes_render_single_log(key, seek, log_i){
                 pmem: [],
                 mem: [],
                 nthreads: [],
-                is_leaf: true
+                is_leaf: true,
+                append: append,
+                charts: charts
             };
         }
         parents_PID.add(proc['ppid']);
@@ -341,138 +357,179 @@ function _tab_processes_render_single_log(key, seek, log_i){
     data = _filtered_data;
     // draw each process
     for (const [pid, proc_data] of Object.entries(data)) {
-        $('#_logs_tab_processes').append(
-            _LOGS_PROCESS_BLOCK_TEMPLATE.format(proc_data)
-        );
+        if (!proc_data.append) {
+            $('#_logs_tab_processes').append(
+                _LOGS_PROCESS_BLOCK_TEMPLATE.format(proc_data)
+            );
+            let command_container = $('#_logs_tab_processes #_log{0}_pid{1}_command_container'.format(log_i, pid));
+            command_container.append(
+                _LOG_PROCESS_COMMAND_TEMPLATE.format(proc_data)
+            );
+            if (proc_data.process_name){
+                _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name] = {};
+                _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name]['command'] = command_container;
+            }
+        }else{
+            _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name]['command'].append(
+                _LOG_PROCESS_COMMAND_TEMPLATE.format(proc_data)
+            );
+        }
         // add CPU canvas to process tab
-        let cpu_canvas = $('<canvas/>').width('100%').height('200px');
-        $('#_logs_tab_processes #_log{0}_cpu_pid{1}_canvas_container'.format(log_i, pid)).append(cpu_canvas);
-        // render CPU usage
-        new Chart(cpu_canvas, {
-            type: 'line',
-            data: {
-                labels: window._DIAGNOSTICS_LOGS_X_RANGE,
-                datasets: [
-                    get_chart_dataset({
-                        canvas: cpu_canvas,
-                        label: 'CPU usage (%)',
-                        data: proc_data.pcpu,
-                        color: color
-                    })
-                ]
-            },
-            options: {
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                callback: function(label) {
-                                    return label.toFixed(0)+' %';
-                                },
-                                min: 0,
-                                max: 100
-                            },
-                            gridLines: {
-                                display: false
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                callback: format_time
-                            }
-                        }
-                    ]
-                }
-            }
+        let pcpu_dataset = get_chart_dataset({
+            label: 'CPU usage (%)',
+            data: proc_data.pcpu,
+            color: color
         });
+        if (!proc_data.append) {
+            let cpu_canvas = $('<canvas/>').width('100%').height('200px');
+            $('#_logs_tab_processes #_log{0}_cpu_pid{1}_canvas_container'.format(log_i, pid)).append(cpu_canvas);
+            // render CPU usage
+            let chart = new Chart(cpu_canvas, {
+                type: 'line',
+                data: {
+                    labels: window._DIAGNOSTICS_LOGS_X_RANGE,
+                    datasets: [
+                        pcpu_dataset
+                    ]
+                },
+                options: {
+                    animation: false,
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function (label) {
+                                        return label.toFixed(0) + ' %';
+                                    },
+                                    min: 0,
+                                    max: 100
+                                },
+                                gridLines: {
+                                    display: false
+                                }
+                            }
+                        ],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    callback: format_time
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+            if (proc_data.process_name){
+                _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name]['pcpu'] = chart;
+            }
+        }else{
+            proc_data.charts['pcpu'].data.datasets.push(pcpu_dataset);
+            proc_data.charts['pcpu'].update();
+        }
         // add RAM canvas to process tab
-        let ram_canvas = $('<canvas/>').width('100%').height('200px');
-        $('#_logs_tab_processes #_log{0}_ram_pid{1}_canvas_container'.format(log_i, pid)).append(ram_canvas);
-        // render RAM usage
-        new Chart(ram_canvas, {
-            type: 'line',
-            data: {
-                labels: window._DIAGNOSTICS_LOGS_X_RANGE,
-                datasets: [
-                    get_chart_dataset({
-                        canvas: ram_canvas,
-                        label: 'RAM usage (%)',
-                        data: proc_data.pmem,
-                        color: color
-                    })
-                ]
-            },
-            options: {
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                callback: function(label) {
-                                    return label.toFixed(0)+' %';
-                                },
-                                min: 0,
-                                max: 100
-                            },
-                            gridLines: {
-                                display: false
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                callback: format_time
-                            }
-                        }
-                    ]
-                }
-            }
+        let pmem_dataset = get_chart_dataset({
+            label: 'RAM usage (%)',
+            data: proc_data.pmem,
+            color: color
         });
+        if (!proc_data.append) {
+            let ram_canvas = $('<canvas/>').width('100%').height('200px');
+            $('#_logs_tab_processes #_log{0}_ram_pid{1}_canvas_container'.format(log_i, pid)).append(ram_canvas);
+            // render RAM usage
+            let chart = new Chart(ram_canvas, {
+                type: 'line',
+                data: {
+                    labels: window._DIAGNOSTICS_LOGS_X_RANGE,
+                    datasets: [
+                        pmem_dataset
+                    ]
+                },
+                options: {
+                    animation: false,
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function (label) {
+                                        return label.toFixed(0) + ' %';
+                                    },
+                                    min: 0,
+                                    max: 100
+                                },
+                                gridLines: {
+                                    display: false
+                                }
+                            }
+                        ],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    callback: format_time
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+            if (proc_data.process_name) {
+                _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name]['pmem'] = chart;
+            }
+        }else{
+            proc_data.charts['pmem'].data.datasets.push(pmem_dataset);
+            proc_data.charts['pmem'].update();
+        }
         // add NTHREADS canvas to process tab
-        let nthreads_canvas = $('<canvas/>').width('100%').height('200px');
-        $('#_logs_tab_processes #_log{0}_nthreads_pid{1}_canvas_container'.format(log_i, pid)).append(nthreads_canvas);
-        // render NTHREADS usage
-        new Chart(nthreads_canvas, {
-            type: 'line',
-            data: {
-                labels: window._DIAGNOSTICS_LOGS_X_RANGE,
-                datasets: [
-                    get_chart_dataset({
-                        canvas: nthreads_canvas,
-                        label: '# Threads',
-                        data: proc_data.nthreads,
-                        color: color,
-                        no_background: true
-                    })
-                ]
-            },
-            options: {
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                callback: function(label) {
-                                    return label;
-                                },
-                                min: 1
-                            },
-                            gridLines: {
-                                display: false
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                callback: format_time
-                            }
-                        }
-                    ]
-                }
-            }
+        let nthreads_dataset = get_chart_dataset({
+            label: '# Threads',
+            data: proc_data.nthreads,
+            color: color,
+            no_background: true
         });
+        if (!proc_data.append) {
+            let nthreads_canvas = $('<canvas/>').width('100%').height('200px');
+            $('#_logs_tab_processes #_log{0}_nthreads_pid{1}_canvas_container'.format(log_i, pid)).append(nthreads_canvas);
+            // render NTHREADS usage
+            let chart = new Chart(nthreads_canvas, {
+                type: 'line',
+                data: {
+                    labels: window._DIAGNOSTICS_LOGS_X_RANGE,
+                    datasets: [
+                        nthreads_dataset
+                    ]
+                },
+                options: {
+                    animation: false,
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function (label) {
+                                        return label;
+                                    },
+                                    min: 1
+                                },
+                                gridLines: {
+                                    display: false
+                                }
+                            }
+                        ],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    callback: format_time
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+            if (proc_data.process_name) {
+                _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name]['nthreads'] = chart;
+            }
+        }else{
+            proc_data.charts['nthreads'].data.datasets.push(nthreads_dataset);
+            proc_data.charts['nthreads'].update();
+        }
         number_of_processes += 1;
     }
     // update processes counter
