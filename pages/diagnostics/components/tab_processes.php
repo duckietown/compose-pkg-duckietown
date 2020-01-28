@@ -50,6 +50,10 @@ $_leaves_only = True;
     font-family: monospace;
     font-size: 0.9em;
 }
+
+#_logs_tab_processes .panel-body dl.dl-horizontal{
+    margin-bottom: 0;
+}
 </style>
 
 
@@ -156,8 +160,9 @@ $_leaves_only = True;
 
 <hr>
 
-<p>Found <strong id="_logs_tab_processes_num_processes">--</strong> processes.</p>
-
+<p>Found
+ <strong id="_logs_tab_processes_num_processes">--</strong> processes in
+ <strong id="_logs_tab_processes_num_groups">--</strong> groups.</p>
 <hr>
 
 <div id="_logs_tab_processes">
@@ -167,7 +172,7 @@ $_leaves_only = True;
 <script type="text/javascript">
 let _LOGS_PROCESS_BLOCK_TEMPLATE = `
 <div class="panel panel-default">
-  <div class="panel-heading" style="background-color: {panel_color}"><strong>Log: </strong>{log} <span style="float: right"><strong>Container: </strong>{container_name}</span></div>
+  {panel_heading}
   <div class="panel-body">
     <table style="width: 100%;">
         <tr>
@@ -208,6 +213,21 @@ let _LOGS_PROCESS_BLOCK_TEMPLATE = `
 
   </div>
 </div>`;
+
+let _LOG_PROCESSES_COMMAND_SPARSE_PANEL_HEADING = `
+<div class="panel-heading" style="background-color: {panel_color}"><strong>Log: </strong>{log} <span style="float: right"><strong>Container: </strong>{container_name}</span></div>
+`;
+
+let _LOG_PROCESSES_COMMAND_CONDENSED_PANEL_HEADING = `
+<div class="panel-heading"><strong>Command: </strong>{command}</div>
+`;
+
+let _LOG_PROCESS_COMMAND_INFO_TEMPLATE = `
+<div class="input-group" style="margin-top: 12px">
+  <span class="input-group-addon" style="background-color: {command_color}"><strong>Command</strong></span>
+    <div class="_proc_command">{command}</div>
+</div>
+`;
 
 let _LOG_PROCESS_COMMAND_TEMPLATE = `
 <div class="input-group" style="margin-top: 12px">
@@ -250,8 +270,8 @@ function _tab_processes_render_single_log(key, seek, log_i){
     let log_containers = window._DIAGNOSTICS_LOGS_DATA[key]['/containers'];
     let start_time = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].time;
     // ---
-    // let number_of_processes = 0;
     let number_of_processes = parseInt($('#_logs_tab_processes_num_processes').html()) || 0;
+    let number_of_groups = parseInt($('#_logs_tab_processes_num_groups').html()) || 0;
     // filters
     let [min_pcpu, max_pcpu] = _LOG_PROCESS_FILTER_VALUES['pcpu'] || _LOG_PROCESS_FILTER_DEFAULT_VALUES['pcpu'];
     let [min_pmem, max_pmem] = _LOG_PROCESS_FILTER_VALUES['pmem'] || _LOG_PROCESS_FILTER_DEFAULT_VALUES['pmem'];
@@ -306,6 +326,9 @@ function _tab_processes_render_single_log(key, seek, log_i){
                 append: append,
                 charts: charts
             };
+            data[PID].panel_heading = condense_plots?
+                _LOG_PROCESSES_COMMAND_CONDENSED_PANEL_HEADING.format(data[PID]) :
+                _LOG_PROCESSES_COMMAND_SPARSE_PANEL_HEADING.format(data[PID]);
         }
         parents_PID.add(proc['ppid']);
         let rel_time = parseInt(proc['time'] - start_time);
@@ -325,6 +348,21 @@ function _tab_processes_render_single_log(key, seek, log_i){
     // filter processes
     let _filtered_data = {};
     for (const [pid, proc_data] of Object.entries(data)) {
+        // 4. command
+        if (!proc_data.command.includes(command_filter))
+            continue;
+        // 5. coverage
+        if ((proc_data.pcpu.length / max_n_points) < min_coverage)
+            continue;
+        if ((proc_data.pcpu.length / max_n_points) > max_coverage)
+            continue;
+        // 6. leaves only
+        if (leaves_only && !proc_data.is_leaf)
+            continue;
+        // 0. needs comparison
+        if (proc_data.append)
+            // add to filtered
+            _filtered_data[pid] = proc_data;
         // 1. cpu usage
         if (proc_data.pcpu.filter(v => v.y >= min_pcpu).length <= 0)
             continue;
@@ -340,19 +378,8 @@ function _tab_processes_render_single_log(key, seek, log_i){
             continue;
         if (proc_data.nthreads.filter(v => v.y >= max_nthreads).length > 0)
             continue;
-        // 4. command
-        if (!proc_data.command.includes(command_filter))
-            continue;
-        // 5. coverage
-        if ((proc_data.pcpu.length / max_n_points) < min_coverage)
-            continue;
-        if ((proc_data.pcpu.length / max_n_points) > max_coverage)
-            continue;
-        // 6. leaves only
-        if (leaves_only && !proc_data.is_leaf)
-            continue;
         // add to filtered
-        _filtered_data[pid] = proc_data
+        _filtered_data[pid] = proc_data;
     }
     data = _filtered_data;
     // draw each process
@@ -526,6 +553,7 @@ function _tab_processes_render_single_log(key, seek, log_i){
             if (proc_data.process_name) {
                 _LOG_PROGRESS_PROC_GROUPS[proc_data.process_name]['nthreads'] = chart;
             }
+            number_of_groups += 1;
         }else{
             proc_data.charts['nthreads'].data.datasets.push(nthreads_dataset);
             proc_data.charts['nthreads'].update();
@@ -534,6 +562,7 @@ function _tab_processes_render_single_log(key, seek, log_i){
     }
     // update processes counter
     $('#_logs_tab_processes_num_processes').html(number_of_processes);
+    $('#_logs_tab_processes_num_groups').html(number_of_groups);
 }
 
 function _find_process_name(command) {
@@ -554,7 +583,7 @@ function _find_process_name(command) {
 
 // this gets executed when the tab gains focus
 let _tab_processes_on_show = function(){
-    let seek = ['/process_stats', '/containers'];
+    let seek = ['/containers', '/process_stats'];
     fetch_log_data(seek, _tab_processes_render_single_log, hidePleaseWait);
 };
 
@@ -579,7 +608,6 @@ $("#_logs_tab_processes_filter_pcpu").slider({
     ticks_positions: [0, 100],
     ticks_labels: ['0%', '100%'],
     formatter: function(value) {
-        // let [min, max] = value.split(',');
 		return value[0] + '%  -  ' + value[1] + '%';
 	}
 });
@@ -619,6 +647,7 @@ $("#_logs_tab_processes_filter_nthreads").slider({
 
 $('#_logs_tab_processes_filter_apply').on('click', function(){
     showPleaseWait();
+    _LOG_PROGRESS_PROC_GROUPS = {};
     setTimeout(function(){
         let filters = {
           pcpu: $('input#_logs_tab_processes_filter_pcpu').val().split(','),
@@ -634,6 +663,7 @@ $('#_logs_tab_processes_filter_apply').on('click', function(){
         localStorage.setItem('_LOG_PROCESS_FILTER_VALUES', filters);
         // clear number of processes
         $('#_logs_tab_processes_num_processes').html('--');
+        $('#_logs_tab_processes_num_groups').html('--');
         // refresh tab
         refresh_current_tab();
     }, 500);

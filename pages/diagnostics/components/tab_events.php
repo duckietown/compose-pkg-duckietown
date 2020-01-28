@@ -71,7 +71,7 @@ function _tab_events_render_all(){
 
 // this gets executed when the tab gains focus
 let _tab_events_on_show = function(){
-    let seek = ['/events', '/containers'];
+    let seek = ['/containers', '/events'];
     fetch_log_data(seek, null, _tab_events_render_all);
 };
 

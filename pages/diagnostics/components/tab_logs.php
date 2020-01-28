@@ -373,7 +373,7 @@ function fetch_log_data(seeks, on_step, on_success){
         });
     };
     // start queue
-    _fetch(to_load);
+    _fetch(to_load.reverse());
 }
 
 function _update_duration(){
