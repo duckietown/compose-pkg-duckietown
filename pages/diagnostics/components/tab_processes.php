@@ -648,6 +648,11 @@ let _tab_processes_on_show = function(){
 // this gets executed when the tab loses focus
 let _tab_processes_on_hide = function(){
     $('#_logs_tab_processes').empty();
+    // clear cache
+    _LOG_PROGRESS_PROC_GROUPS = {};
+    // clear number of processes
+    $('#_logs_tab_processes_num_processes').html('--');
+    $('#_logs_tab_processes_num_groups').html('--');
 };
 
 $('#_logs_tab_btns a[href="#processes"]').on('shown.bs.tab', _tab_processes_on_show);
