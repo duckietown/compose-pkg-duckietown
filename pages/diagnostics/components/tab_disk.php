@@ -157,7 +157,7 @@ function _tab_disk_render_single_log(key, seek, log_i){
 
 // this gets executed when the tab gains focus
 let _tab_disk_on_show = function(){
-    let seek = ['/container_stats/[container,time,io_r,io_w]', '/containers'];
+    let seek = ['/containers', '/container_stats/[container,time,io_r,io_w]'];
     fetch_log_data(seek, _tab_disk_render_single_log);
 };
 

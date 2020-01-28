@@ -166,7 +166,7 @@ function _tab_network_render_single_log(key, seek, log_i){
 
 // this gets executed when the tab gains focus
 let _tab_network_on_show = function(){
-    let seek = ['/container_stats/[container,time,network]', '/containers'];
+    let seek = ['/containers', '/container_stats/[container,time,network]'];
     fetch_log_data(seek, _tab_network_render_single_log);
 };
 
