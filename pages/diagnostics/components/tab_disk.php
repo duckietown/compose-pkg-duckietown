@@ -102,7 +102,7 @@ function _tab_disk_render_single_log(key, seek, log_i){
             _LOGS_CONTAINER_DISK_BLOCK_TEMPLATE.format(container_data)
         );
         // add Disk I/O canvas to container tab
-        let io_rw_canvas = $('<canvas/>').width('100%').height('200px');
+        let io_rw_canvas = get_empty_canvas();
         $('#_logs_tab_disk #_log{0}_cont{1}_disk_canvas_container'.format(log_i, c_id)).append(io_rw_canvas);
         // render CPU usage
         new Chart(io_rw_canvas, {

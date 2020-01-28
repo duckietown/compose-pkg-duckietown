@@ -229,11 +229,11 @@ function _populate_table(keys){
     // get colors
     let colors = [
         'red',
-        'orange',
-        'yellow',
-        'green',
         'blue',
+        'green',
+        'orange',
         'purple',
+        'yellow',
         'grey'
     ];
     let _color = c => '<span class="fa fa-stop" aria-hidden="true" style="font-size: 16px; color: {0}"></span>'.format(window.chartColors[colors[c]]);

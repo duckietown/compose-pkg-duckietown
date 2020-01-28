@@ -143,10 +143,19 @@ window._DIAGNOSTICS_LOADING_PROGRESS = 0;
 window._DIAGNOSTICS_LOGS_DURATION = 0;
 window._DIAGNOSTICS_LOGS_X_RESOLUTION = 1;
 window._DIAGNOSTICS_LOGS_X_RANGE = [];
+window._DIAGNOSTICS_LOGS_WIDTH = '100%';
+window._DIAGNOSTICS_LOGS_HEIGHT = '240px';
+
+function get_empty_canvas(width, height){
+    let _w = width || window._DIAGNOSTICS_LOGS_WIDTH;
+    let _h = height || window._DIAGNOSTICS_LOGS_HEIGHT;
+    return $('<canvas/>').width(_w).height(_h);
+}
 
 function get_chart_dataset(opts){
+    let bg_alpha = opts['background_alpha'] || 0.1;
     let gradient = $('<canvas/>').get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
-    gradient.addColorStop(0, "rgba({0}, .6)".format(opts['color']));
+    gradient.addColorStop(0, "rgba({0}, {1})".format(opts['color'], bg_alpha));
     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
     gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
     // opts['data'] = opts['data'].filter(p => (p.x <= window._DIAGNOSTICS_LOGS_DURATION));
@@ -157,10 +166,10 @@ function get_chart_dataset(opts){
     // ---
     let default_opts = {
         backgroundColor: opts['no_background']? 'rgba(0, 0, 0, 0)' : gradient,
-        borderColor: "rgba({0}, .8)".format(opts['color']),
+        borderColor: "rgba({0}, .9)".format(opts['color']),
         pointRadius: 3,
         pointBackgroundColor: '#fff',
-        borderWidth: 1,
+        borderWidth: 2,
         fill: true
     };
     return {...default_opts, ...opts};

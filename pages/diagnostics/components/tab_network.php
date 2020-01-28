@@ -110,7 +110,7 @@ function _tab_network_render_single_log(key, seek, log_i){
         // add Network I/O canvas to container tab
         for (const [iface_name, iface_data] of Object.entries(container_data['network'])) {
             container_plots_div.append($('<h4 class="col-md-12"/>').append('Network device: '+iface_name));
-            let net_rw_canvas = $('<canvas/>').width('100%').height('200px');
+            let net_rw_canvas = get_empty_canvas();
             container_plots_div.append(net_rw_canvas);
             // render IFace usage
             new Chart(net_rw_canvas, {
