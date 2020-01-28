@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div class="_selector col-md-2">
+    <div class="_selector col-md-3" style="width: 20%">
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon">Group</div>
@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="_selector col-md-3">
+    <div class="_selector col-md-3" style="width: 20%">
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon">Type</div>
