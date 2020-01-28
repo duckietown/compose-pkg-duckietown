@@ -1,3 +1,6 @@
+## 0.1.5 (January 27, 2020)
+  - fixed bug
+
 ## 0.1.4 (January 08, 2020)
   - now recording login system
   - removed default value from Core::getSetting calls
