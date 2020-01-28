@@ -282,9 +282,9 @@ class Duckietown{
     // update duckietown token for the current user
     self::setUserToken($userid, $duckietown_user_id, $duckietoken);
     // (try to) set login system
-    try {
-      Core::setLoginSystem('DUCKIETOWN_TOKEN');
-    } catch (\Exception $e) {}
+//    try {
+//      Core::setLoginSystem('DUCKIETOWN_TOKEN');
+//    } catch (\Exception $e) {}
     // set login variables
     $_SESSION['USER_LOGGED'] = true;
     $_SESSION['USER_RECORD'] = $user_info;
