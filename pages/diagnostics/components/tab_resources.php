@@ -10,8 +10,9 @@ Keys used from Log:
 
     resources_stats:
         time
-        memory.pmem
         cpu.pcpu
+        memory.pmem
+        swap.pswap
 
 */
 ?>
@@ -27,6 +28,10 @@ Keys used from Log:
     <h4>Ram Usage</h4>
     <div id="_logs_tab_resources_ram">
     </div>
+    <br/><br/>
+    <h4>Swap Usage</h4>
+    <div id="_logs_tab_resources_swap">
+    </div>
 </div>
 
 
@@ -36,6 +41,7 @@ function _tab_resources_render_logs(){
     let seek = '/resources_stats';
     let pcpu_datasets = [];
     let pmem_datasets = [];
+    let pswap_datasets = [];
     get_listed_logs('_key').forEach(function(key){
         let color = get_log_info(key, '_color');
         let log_data = window._DIAGNOSTICS_LOGS_DATA[key][seek];
@@ -43,6 +49,7 @@ function _tab_resources_render_logs(){
         // create datasets
         let pcpu = log_data.map(function(e){return {x: parseInt(e.time - start_time), y: e.cpu.pcpu}});
         let pmem = log_data.map(function(e){return {x: parseInt(e.time - start_time), y: e.memory.pmem}});
+        let pswap = log_data.map(function(e){return {x: parseInt(e.time - start_time), y: e.swap.pswap}});
         // ---
         pcpu_datasets.push(get_chart_dataset({
             label: 'CPU usage (%)',
@@ -52,6 +59,11 @@ function _tab_resources_render_logs(){
         pmem_datasets.push(get_chart_dataset({
             label: 'RAM usage (%)',
             data: pmem,
+            color: color
+        }));
+        pswap_datasets.push(get_chart_dataset({
+            label: 'SWAP usage (%)',
+            data: pswap,
             color: color
         }));
     });
@@ -127,6 +139,42 @@ function _tab_resources_render_logs(){
             }
         }
     });
+    // add SWAP canvas to tab
+    let swap_canvas = get_empty_canvas();
+    $('#_logs_tab_resources #_logs_tab_resources_swap').append(swap_canvas);
+    // render RAM usage
+    new Chart(swap_canvas, {
+        type: 'line',
+        data: {
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
+            datasets: pswap_datasets
+        },
+        options: {
+            scales: {
+                yAxes: [
+                    {
+                        ticks: {
+                            callback: function(label) {
+                                return label.toFixed(0)+' %';
+                            },
+                            min: 0,
+                            max: 100
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
+                        }
+                    }
+                ]
+            }
+        }
+    });
 }
 
 // this gets executed when the tab gains focus
@@ -139,6 +187,7 @@ let _tab_resources_on_show = function(){
 let _tab_resources_on_hide = function(){
     $('#_logs_tab_resources #_logs_tab_resources_cpu').empty();
     $('#_logs_tab_resources #_logs_tab_resources_ram').empty();
+    $('#_logs_tab_resources #_logs_tab_resources_swap').empty();
 };
 
 $('#_logs_tab_btns a[href="#resources"]').on('shown.bs.tab', _tab_resources_on_show);
