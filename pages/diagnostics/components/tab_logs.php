@@ -25,7 +25,7 @@
     <div class="_selector col-md-3" style="width: 20%">
         <div class="form-group">
             <div class="input-group">
-                <div class="input-group-addon">Type</div>
+                <div class="input-group-addon">Subgroup</div>
                 <select id="_sel_type" class="selectpicker" data-live-search="true" data-width="100%">
                 </select>
             </div>
@@ -75,7 +75,7 @@ function _logs_print_table_structure($id = null, $read_only = true) {
           <th style="display:none">_color</th>
           <th class="col-md-1 text-center">Color</th>
           <th class="col-md-2 text-center">Group</th>
-          <th class="col-md-2 text-center">Type</th>
+          <th class="col-md-2 text-center">Subgroup</th>
           <th class="col-md-3 text-center">Device</th>
           <th class="col-md-3 text-center">Time</th>
           <th class="col-md-1 text-center">Actions</th>
