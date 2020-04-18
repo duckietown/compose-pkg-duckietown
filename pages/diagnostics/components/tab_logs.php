@@ -288,10 +288,10 @@ $('#_btn_add_log').on('click', function(){
 function _rm_log(key){
     // remove row
     $('._log_row_{0}'.format(key)).closest('tr').remove();
-    //refresh current tab
-    refresh_current_tab();
     // refresh table
     _refresh_table();
+    //refresh current tab
+    refresh_current_tab();
 }
 
 function refresh_current_tab(){
