@@ -1,6 +1,5 @@
 <?php
 use \system\classes\Core;
-use \system\packages\data\Data;
 
 $LOGS_VERSION = "v1";
 
@@ -55,14 +54,6 @@ if (strlen($db_app_id) > 0 && strlen($db_app_secret) > 0) {
     color: #555;
 }
 </style>
-
-<?php
-$res = Data::list($logs_db_name);
-if (!$res['success']) {
-    echo sprintf('<h3 class="text-center">ERROR: %s</h3>', $res['data']);
-    return;
-}
-?>
 
 <?php
 $tabs = [
@@ -158,7 +149,6 @@ function get_chart_dataset(opts){
     gradient.addColorStop(0, "rgba({0}, {1})".format(opts['color'], bg_alpha));
     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
     gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-    // opts['data'] = opts['data'].filter(p => (p.x <= window._DIAGNOSTICS_LOGS_DURATION));
     opts['data'] = opts['data'].map(function(p){return {
         x: Math.min(p.x, window._DIAGNOSTICS_LOGS_DURATION),
         y: p.y
