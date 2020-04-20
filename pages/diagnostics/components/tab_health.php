@@ -23,12 +23,16 @@ Keys used from Log:
     <div id="_logs_tab_health_status">
     </div>
     <br/><br/>
-    <h4>CPU Temperature</h4>
+    <h4>CPU Temperature ('C)</h4>
     <div id="_logs_tab_health_cpu_temp">
     </div>
     <br/><br/>
-    <h4>Voltage</h4>
-    <div id="_logs_tab_health_voltage">
+    <h4>CPU Voltage (V)</h4>
+    <div id="_logs_tab_health_cpu_voltage">
+    </div>
+    <br/><br/>
+    <h4>RAM Voltage (V)</h4>
+    <div id="_logs_tab_health_ram_voltage">
     </div>
 </div>
 
@@ -48,7 +52,10 @@ function _tab_health_render_logs(){
         let color = get_log_info(key, '_color');
         let log_data = window._DIAGNOSTICS_LOGS_DATA[key][seek];
         let start_time = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].time;
-        let duration = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].duration;
+        let log_legend_entry = '{0} ({1})'.format(
+            window._DIAGNOSTICS_LOGS_DATA[key]['/general'].group,
+            window._DIAGNOSTICS_LOGS_DATA[key]['/general'].subgroup
+        );
         // create datasets
         let status = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
@@ -65,7 +72,7 @@ function _tab_health_render_logs(){
             }
         });
         status_datasets.push(get_chart_dataset({
-            label: "Status",
+            label: log_legend_entry,
             data: status,
             color: color,
             _txt: status_txt
@@ -75,7 +82,7 @@ function _tab_health_render_logs(){
             y: parseFloat(e.temp.slice(0,-2))
         }});
         cpu_temp_datasets.push(get_chart_dataset({
-            label: "CPU Temp (\'C)",
+            label: log_legend_entry,
             data: cpu_temp,
             color: color
         }));
@@ -84,7 +91,7 @@ function _tab_health_render_logs(){
             y: parseFloat(e.volts.core.slice(0,-1))
         }});
         cpu_volt_datasets.push(get_chart_dataset({
-            label: "CPU Voltage (V)",
+            label: log_legend_entry,
             data: cpu_volt,
             color: color
         }));
@@ -93,7 +100,7 @@ function _tab_health_render_logs(){
             y: parseFloat(e.volts.sdram_i.slice(0,-1))
         }});
         ram_volt_datasets.push(get_chart_dataset({
-            label: "RAM Voltage (V)",
+            label: log_legend_entry,
             data: ram_volt,
             color: color
         }));
@@ -180,7 +187,7 @@ function _tab_health_render_logs(){
     });
     // add volts canvas to tab
     let cpu_volt_canvas = get_empty_canvas();
-    $('#_logs_tab_health #_logs_tab_health_voltage').append(cpu_volt_canvas);
+    $('#_logs_tab_health #_logs_tab_health_cpu_voltage').append(cpu_volt_canvas);
     // render RAM usage
     new Chart(cpu_volt_canvas, {
         type: 'line',
@@ -216,7 +223,7 @@ function _tab_health_render_logs(){
     });
     // add volts canvas to tab
     let ram_volt_canvas = get_empty_canvas();
-    $('#_logs_tab_health #_logs_tab_health_voltage').append(ram_volt_canvas);
+    $('#_logs_tab_health #_logs_tab_health_ram_voltage').append(ram_volt_canvas);
     // render RAM usage
     new Chart(ram_volt_canvas, {
         type: 'line',
@@ -262,7 +269,8 @@ let _tab_health_on_show = function(){
 let _tab_health_on_hide = function(){
     $('#_logs_tab_health #_logs_tab_health_status').empty();
     $('#_logs_tab_health #_logs_tab_health_cpu_temp').empty();
-    $('#_logs_tab_health #_logs_tab_health_voltage').empty();
+    $('#_logs_tab_health #_logs_tab_health_cpu_voltage').empty();
+    $('#_logs_tab_health #_logs_tab_health_ram_voltage').empty();
 };
 
 $('#_logs_tab_btns a[href="#health"]').on('shown.bs.tab', _tab_health_on_show);

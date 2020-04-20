@@ -46,23 +46,27 @@ function _tab_resources_render_logs(){
         let color = get_log_info(key, '_color');
         let log_data = window._DIAGNOSTICS_LOGS_DATA[key][seek];
         let start_time = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].time;
+        let log_legend_entry = '{0} ({1})'.format(
+            window._DIAGNOSTICS_LOGS_DATA[key]['/general'].group,
+            window._DIAGNOSTICS_LOGS_DATA[key]['/general'].subgroup
+        );
         // create datasets
         let pcpu = log_data.map(function(e){return {x: parseInt(e.time - start_time), y: e.cpu.pcpu}});
         let pmem = log_data.map(function(e){return {x: parseInt(e.time - start_time), y: e.memory.pmem}});
         let pswap = log_data.map(function(e){return {x: parseInt(e.time - start_time), y: e.swap.pswap}});
         // ---
         pcpu_datasets.push(get_chart_dataset({
-            label: 'CPU usage (%)',
+            label: log_legend_entry,
             data: pcpu,
             color: color
         }));
         pmem_datasets.push(get_chart_dataset({
-            label: 'RAM usage (%)',
+            label: log_legend_entry,
             data: pmem,
             color: color
         }));
         pswap_datasets.push(get_chart_dataset({
-            label: 'SWAP usage (%)',
+            label: log_legend_entry,
             data: pswap,
             color: color
         }));

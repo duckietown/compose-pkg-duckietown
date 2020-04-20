@@ -184,8 +184,14 @@ let _LOGS_PROCESS_BLOCK_TEMPLATE = `
         </tr>
         <tr>
             <td>
+                <br/>
+                <h4>CPU Usage (%)</h4>
                 <div id="_log{log_i}_cpu_pid{pid}_canvas_container"></div>
+                <br/><br/>
+                <h4>RAM Usage (%)</h4>
                 <div id="_log{log_i}_ram_pid{pid}_canvas_container"></div>
+                <br/><br/>
+                <h4>Number of Threads</h4>
                 <div id="_log{log_i}_nthreads_pid{pid}_canvas_container"></div>
             </td>
         </tr>
@@ -293,6 +299,10 @@ function _tab_processes_render_single_log(key, seek, log_i){
     let log_data = window._DIAGNOSTICS_LOGS_DATA[key][seek];
     let log_containers = window._DIAGNOSTICS_LOGS_DATA[key]['/containers'];
     let start_time = window._DIAGNOSTICS_LOGS_DATA[key]['/general'].time;
+    let log_legend_entry = '{0} ({1})'.format(
+        window._DIAGNOSTICS_LOGS_DATA[key]['/general'].group,
+        window._DIAGNOSTICS_LOGS_DATA[key]['/general'].subgroup
+    );
     // ---
     let number_of_processes = parseInt($('#_logs_tab_processes_num_processes').html()) || 0;
     let number_of_groups = parseInt($('#_logs_tab_processes_num_groups').html()) || 0;
@@ -339,6 +349,7 @@ function _tab_processes_render_single_log(key, seek, log_i){
                 process_name: process_name,
                 process_name_str: process_name? '<strong>'+process_name+'</strong>' : '(check command below)',
                 process_name_str_plain: process_name || '(check command below)',
+                log_legend_entry: log_legend_entry,
                 container: proc['container'],
                 pid: PID,
                 ppid: proc['ppid'],
@@ -444,7 +455,7 @@ function _tab_processes_render_single_log(key, seek, log_i){
         }
         // add CPU canvas to process tab
         let pcpu_dataset = get_chart_dataset({
-            label: 'CPU usage (%)',
+            label: proc_data.log_legend_entry,
             data: proc_data.pcpu,
             color: color,
             background_alpha: 0.4
@@ -497,7 +508,7 @@ function _tab_processes_render_single_log(key, seek, log_i){
         }
         // add RAM canvas to process tab
         let pmem_dataset = get_chart_dataset({
-            label: 'RAM usage (%)',
+            label: proc_data.log_legend_entry,
             data: proc_data.pmem,
             color: color,
             background_alpha: 0.4
@@ -550,7 +561,7 @@ function _tab_processes_render_single_log(key, seek, log_i){
         }
         // add NTHREADS canvas to process tab
         let nthreads_dataset = get_chart_dataset({
-            label: '# Threads',
+            label: proc_data.log_legend_entry,
             data: proc_data.nthreads,
             color: color,
             no_background: true
