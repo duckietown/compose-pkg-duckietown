@@ -1,3 +1,15 @@
+<?php
+use \system\classes\Core;
+use \system\classes\Configuration;
+
+$logs_db_host = Core::getSetting('logs_db_host', 'duckietown');
+$logs_db_name = Core::getSetting('logs_db_name', 'duckietown');
+
+if (strlen($logs_db_host) < 1) {
+    $logs_db_host = Configuration::$BASE;
+}
+?>
+
 <form class="form-inline" id="_log_selectors_form">
 
   <div class="row">
@@ -76,9 +88,9 @@ function _logs_print_table_structure($id = null, $read_only = true) {
           <th class="col-md-1 text-center">Color</th>
           <th class="col-md-2 text-center">Group</th>
           <th class="col-md-2 text-center">Subgroup</th>
-          <th class="col-md-3 text-center">Device</th>
+          <th class="col-md-2 text-center">Device</th>
           <th class="col-md-3 text-center">Time</th>
-          <th class="col-md-1 text-center">Actions</th>
+          <th class="col-md-2 text-center">Actions</th>
         </tr>
     </table>
     <?php
@@ -252,7 +264,10 @@ function _populate_table(keys){
                 <td>{5}</td>
                 <td>{6}</td>
                 <td>
-                    <a href="#" role="button" class="_log_row_{0} btn btn-default" onclick="_rm_log('{0}')">
+                    <a href="#" role="button" class="_log_row_{0} btn btn-default" title="Download log" onclick="_download_log('{0}')">
+                        <span class="glyphicon glyphicon-download-alt" aria-hidden="true" style="color: darkgreen"></span>
+                    </a>
+                    <a href="#" role="button" class="_log_row_{0} btn btn-default" title="Remove log" onclick="_rm_log('{0}')">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true" style="color: darkred"></span>
                     </a>
                 </td>
@@ -284,6 +299,19 @@ $('#_btn_add_log').on('click', function(){
     $('#_sel_stamp').trigger('changed.bs.select');
     $('#_sel_stamp').selectpicker('refresh');
 });
+
+function _download_log(key){
+    // compile log URL
+    let log_url = '{0}/script.php?package={1}&script={2}&database={3}&key={4}'.format(
+        "<?php echo $logs_db_host ?>",
+        "duckietown",
+        "download_diagnostics_log",
+        "<?php echo $logs_db_name ?>",
+        key
+    );
+    // download log
+    window.open(log_url, '_blank');
+}
 
 function _rm_log(key){
     // remove row
