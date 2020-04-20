@@ -10,7 +10,7 @@
         "title" : "Diagnostics: DB Name",
         "type" : "text",
         "default" : "",
-        "details" : "The app_id of the app used to access the logs database"
+        "details" : "The name of the database containing the diagnostics logs"
     },
     "db_app_id" : {
         "title" : "Diagnostics: App ID",
