@@ -1,11 +1,11 @@
 {
-    "name" : "Setup",
+    "name" : "Onboarding",
     "package" : "duckietown",
     "menu_entry" : {
         "order" : 0,
         "icon" : {
             "class" : "fa",
-            "name" : "wrench"
+            "name" : "handshake-o"
         },
         "responsive" : {
             "priority" : 35
