@@ -22,7 +22,7 @@ function execute( &$service, &$actionName, &$arguments ){
       //
       $duckietoken = $arguments['duckietoken'];
       $res = Duckietown::logInUserWithDuckietoken( $duckietoken );
-      if( !$res['success'] ){
+      if (!$res['success']){
         return response400BadRequest($res['data']);
       }
       // success
@@ -36,14 +36,16 @@ function execute( &$service, &$actionName, &$arguments ){
       $token = $arguments['duckietoken'];
       // verify token
       $res = Duckietown::verifyDuckietoken($token);
-      if(!$res['success'])
-      return response400BadRequest($res['data']);
+      if (!$res['success']){
+        return response400BadRequest($res['data']);
+      }
       // get duckietown id
       $duckietown_user_id = $res['data']['uid'];
       // store auth info
       $res = Duckietown::setUserToken($user_id, $duckietown_user_id, $token);
-      if( !$res['success'] )
-      return response400BadRequest($res['data']);
+      if (!$res['success']){
+        return response400BadRequest($res['data']);
+      }
       //
       return response200OK();
       break;
@@ -54,12 +56,14 @@ function execute( &$service, &$actionName, &$arguments ){
       // unlink auth info
       $db = new Database('duckietown', 'authentication');
       $res = $db->delete( $user_id );
-      if( !$res['success'] ) return response500InternalServerError($res['data']);
+      if(!$res['success']){
+        return response500InternalServerError($res['data']);
+      }
       //
       return response200OK();
       break;
-      //
-      default:
+    //
+    default:
       return response404NotFound( sprintf("The command '%s' was not found", $actionName) );
       break;
   }
