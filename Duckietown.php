@@ -27,6 +27,103 @@ class Duckietown {
     
     private static $CANDIDATE_PAGE = 'onboarding';
     
+    const STORAGE_BUCKETS = [
+        'duckietown-public-storage',
+        'duckietown-private-storage'
+    ];
+    
+    const STORAGE_ACTIONS = [
+// NOTE: Only some actions are enabled
+//        "abort_multipart_upload",
+//        "complete_multipart_upload",
+//        "copy_object",
+//        "create_bucket",
+//        "create_multipart_upload",
+//        "delete_bucket",
+//        "delete_bucket_analytics_configuration",
+//        "delete_bucket_cors",
+//        "delete_bucket_encryption",
+//        "delete_bucket_inventory_configuration",
+//        "delete_bucket_lifecycle",
+//        "delete_bucket_metrics_configuration",
+//        "delete_bucket_policy",
+//        "delete_bucket_replication",
+//        "delete_bucket_tagging",
+//        "delete_bucket_website",
+        "delete_object",
+//        "delete_object_tagging",
+//        "delete_objects",
+//        "delete_public_access_block",
+//        "get_bucket_accelerate_configuration",
+//        "get_bucket_acl",
+//        "get_bucket_analytics_configuration",
+//        "get_bucket_cors",
+//        "get_bucket_encryption",
+//        "get_bucket_inventory_configuration",
+//        "get_bucket_lifecycle",
+//        "get_bucket_lifecycle_configuration",
+//        "get_bucket_location",
+//        "get_bucket_logging",
+//        "get_bucket_metrics_configuration",
+//        "get_bucket_notification",
+//        "get_bucket_notification_configuration",
+//        "get_bucket_policy",
+//        "get_bucket_policy_status",
+//        "get_bucket_replication",
+//        "get_bucket_request_payment",
+//        "get_bucket_tagging",
+//        "get_bucket_versioning",
+//        "get_bucket_website",
+        "get_object",
+//        "get_object_acl",
+//        "get_object_legal_hold",
+//        "get_object_lock_configuration",
+//        "get_object_retention",
+//        "get_object_tagging",
+//        "get_object_torrent",
+//        "get_public_access_block",
+//        "head_bucket",
+        "head_object",
+//        "list_bucket_analytics_configurations",
+//        "list_bucket_inventory_configurations",
+//        "list_bucket_metrics_configurations",
+//        "list_buckets",
+//        "list_multipart_uploads",
+//        "list_object_versions",
+//        "list_objects",
+        "list_objects_v2",
+//        "list_parts",
+//        "put_bucket_accelerate_configuration",
+//        "put_bucket_acl",
+//        "put_bucket_analytics_configuration",
+//        "put_bucket_cors",
+//        "put_bucket_encryption",
+//        "put_bucket_inventory_configuration",
+//        "put_bucket_lifecycle",
+//        "put_bucket_lifecycle_configuration",
+//        "put_bucket_logging",
+//        "put_bucket_metrics_configuration",
+//        "put_bucket_notification",
+//        "put_bucket_notification_configuration",
+//        "put_bucket_policy",
+//        "put_bucket_replication",
+//        "put_bucket_request_payment",
+//        "put_bucket_tagging",
+//        "put_bucket_versioning",
+//        "put_bucket_website",
+        "put_object",
+//        "put_object_acl",
+//        "put_object_legal_hold",
+//        "put_object_lock_configuration",
+//        "put_object_retention",
+//        "put_object_tagging",
+//        "put_public_access_block",
+//        "restore_object",
+//        "select_object_content",
+//        "upload_part",
+//        "upload_part_copy"
+    ];
+    
     
     // disable the constructor
     private function __construct() {
@@ -294,6 +391,17 @@ class Duckietown {
         return ['success' => true, 'data' => $user_info];
     }//logInUserWithDuckietoken
     
+    
+    public static function getStorageSpacePermissionsForUser($uid=null, $bucket=null, $object=null, $action=null) {
+        return self::getStorageSpacePermissions('user_storage_permission', $uid, $bucket, $object, $action);
+    }//getStorageSpacePermissionsForUser
+    
+    
+    public static function getStorageSpacePermissionsForGroup($gid=null, $bucket=null, $object=null, $action=null) {
+        return self::getStorageSpacePermissions('group_storage_permission', $gid, $bucket, $object, $action);
+    }//getStorageSpacePermissionsForGroup
+    
+    
     public static function checkStorageSpacePermissions($uid, $bucket, $object, $action) {
         // get user identities associated to the given UID
         $identities = [
@@ -343,7 +451,7 @@ class Duckietown {
         }
         // no permissions found
         return ['success' => true, 'data' => false];
-    }//getStorageSpacePermissions
+    }//checkStorageSpacePermissions
     
     
     public static function grantStorageSpacePermissionToUser($uid, $bucket, $object, $action){
@@ -352,9 +460,7 @@ class Duckietown {
             return ['success' => false, 'data' => "User $uid not found!"];
         }
         // grant permissions
-        return self::grantStorageSpacePermission(
-            'user_storage_permission', $uid, $bucket, $object, $action
-        );
+        return self::grantStorageSpacePermission('user', $uid, $bucket, $object, $action);
     }//grantStorageSpacePermissionToUser
     
     
@@ -364,10 +470,8 @@ class Duckietown {
             return ['success' => false, 'data' => "Group $gid not found!"];
         }
         // grant permissions
-        return self::grantStorageSpacePermission(
-            'group_storage_permission', $gid, $bucket, $object, $action
-        );
-    }//grantStorageSpacePermissionToUser
+        return self::grantStorageSpacePermission('group', $gid, $bucket, $object, $action);
+    }//grantStorageSpacePermissionToGroup
     
     
     public static function revokeStorageSpacePermissionToUser($uid, $bucket, $object, $action){
@@ -398,11 +502,62 @@ class Duckietown {
     // Private functions
     
     
-    private static function grantStorageSpacePermission($db_name, $id, $bucket, $object, $action){
-        $db = new Database('duckietown', $db_name);
+    private static function getStorageSpacePermissions($db_name, $id=null, $bucket=null, $object=null, $action=null) {
+        // create filtering key
+        $k_id = is_null($id)? '[A-Za-z0-9_]+' : Utils::string_to_valid_filename($id);
+        $k_bucket = is_null($bucket)? '[A-Za-z0-9_]+' : Utils::string_to_valid_filename($bucket);
+        $k_action = is_null($action)? '[A-Za-z0-9_]+' : Utils::string_to_valid_filename($action);
+        // compile key pattern
+        $key_pattern = "/^($k_id)__($k_bucket)__($k_action)$/";
+        // get storage permissions for given bucket on all identities
+        $db = new Database('duckietown', $db_name, $key_pattern);
+        $keys = $db->list_keys();
+        // read everything
+        $objects = [];
+        foreach ($keys as $key) {
+            $res = $db->read($key);
+            if (!$res['success']) {
+                return $res;
+            }
+            $bkt = $res['data']['bucket'];
+            $act = $res['data']['action'];
+            if (!array_key_exists($bkt, $objects)) {
+                $objects[$bkt] = [];
+            }
+            foreach ($res['data']['objects'] as $pattern) {
+                if (!is_null($object) && !fnmatch($pattern, $object)) {
+                    continue;
+                }
+                if (!array_key_exists($pattern, $objects[$bkt])) {
+                    $objects[$bkt][$pattern] = [];
+                }
+                if (!array_key_exists($act, $objects[$bkt][$pattern])) {
+                    $objects[$bkt][$pattern][$act] = [];
+                }
+                array_push(
+                    $objects[$bkt][$pattern][$act],
+                    array_filter(
+                        $res['data'],
+                        function ($k) {return !in_array($k, ['objects']);},
+                        ARRAY_FILTER_USE_KEY
+                    )
+                );
+            }
+        }
+        // ---
+        return $objects;
+    }//getStorageSpacePermissions
+    
+    
+    private static function grantStorageSpacePermission($entity, $id, $bucket, $object, $action){
+        $db = new Database('duckietown', "{$entity}_storage_permission");
         $key = sprintf('%s__%s__%s', $id, $bucket, $action);
         // create default entry payload (will be overwritten if the record already exists)
         $data = [
+            'bucket' => $bucket,
+            'action' => $action,
+            'grantee-type' => $entity,
+            'grantee-id' => $id,
             'created-by' => Core::getUserLogged('username'),
             'creation-time' => time(),
             'objects' => []
