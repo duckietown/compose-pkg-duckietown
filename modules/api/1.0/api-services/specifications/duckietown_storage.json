@@ -253,12 +253,14 @@
                     "uid": {
                         "type": "key",
                         "length": null,
-                        "details": "Compose user ID"
+                        "details": "Compose user ID",
+                        "nullable": true
                     },
                     "gid": {
                         "type": "key",
                         "length": null,
-                        "details": "Compose group ID"
+                        "details": "Compose group ID",
+                        "nullable": true
                     }
                 }
             },
@@ -391,12 +393,14 @@
                     "uid": {
                         "type": "key",
                         "length": null,
-                        "details": "Compose user ID"
+                        "details": "Compose user ID",
+                        "nullable": true
                     },
                     "gid": {
                         "type": "key",
                         "length": null,
-                        "details": "Compose group ID"
+                        "details": "Compose group ID",
+                        "nullable": true
                     }
                 }
             },
