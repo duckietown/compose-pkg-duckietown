@@ -20,11 +20,28 @@ $arg_action = (isset($_GET['action']) && in_array($_GET['action'], $_all_actions
     $_GET['action'] : null;
 $arg_object = isset($_GET['object'])? $_GET['object'] : null;
 
+// user and group filters are null
+$_is_admin = Core::getUserRole() === 'administrator';
+$_user = $_is_admin ? null : Core::getUserLogged('username');
+$_groups = [null];
+if (!is_null($_user)) {
+    $_groups = [];
+    $res = Core::getUserGroups($_user);
+    if (!$res['success']) {
+        Core::throwError($res['data']);
+        return;
+    }
+    $_groups = $res['data'];
+}
+
 // get all object permissions
-$objects = array_merge_recursive(
-    Duckietown::getStorageSpacePermissionsForUser(null, $arg_bucket, $arg_object, $arg_action),
-    Duckietown::getStorageSpacePermissionsForGroup(null, $arg_bucket, $arg_object, $arg_action)
-);
+$objects = Duckietown::getStorageSpacePermissionsForUser($_user, $arg_bucket, $arg_object, $arg_action);
+foreach ($_groups as $_group) {
+    $objects = array_merge_recursive(
+        $objects,
+        Duckietown::getStorageSpacePermissionsForGroup($_group, $arg_bucket, $arg_object, $arg_action)
+    );
+}
 
 // reorganize all objects
 $_all_objects = [];
@@ -101,19 +118,25 @@ $form = new SmartForm($form_schema);
 
 <h2 class="page-title">
     Cloud Storage
-    <button
-        class="btn btn-warning"
-        type="button"
-        data-toggle="tooltip dialog"
-        data-placement="bottom"
-        data-original-title="Grant new permissions"
-        data-modal-mode="insert"
-        data-modal-title="Grant new Cloud Storage permissions"
-        data-target="#<?php echo $form->modalID ?>"
-        style="float: right">
-        <i class="fa fa-plus" aria-hidden="true"></i>
-        &nbsp;Grant permission
-    </button>
+    <?php
+    if ($_is_admin) {
+        ?>
+        <button
+            class="btn btn-warning"
+            type="button"
+            data-toggle="tooltip dialog"
+            data-placement="bottom"
+            data-original-title="Grant new permissions"
+            data-modal-mode="insert"
+            data-modal-title="Grant new Cloud Storage permissions"
+            data-target="#<?php echo $form->modalID ?>"
+            style="float: right">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            &nbsp;Grant permission
+        </button>
+        <?php
+    }
+    ?>
 </h2>
 
 <p>
