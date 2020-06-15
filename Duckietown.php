@@ -124,6 +124,8 @@ class Duckietown {
 //        "upload_part_copy"
     ];
     
+    const ANYBODY_GROUP = 'Anybody in Duckietown';
+    
     
     // disable the constructor
     private function __construct() {
@@ -172,6 +174,11 @@ class Duckietown {
                 if (Core::getUserRole('duckietown') == 'candidate' && Configuration::$PAGE != self::$CANDIDATE_PAGE) {
                     Core::redirectTo(self::$CANDIDATE_PAGE);
                 }
+            }
+            // create the "everybody" group if not present
+            if (!Core::groupExists(self::ANYBODY_GROUP)) {
+                $res = Core::createUserGroup(self::ANYBODY_GROUP, self::ANYBODY_GROUP);
+                if (!$res['success']) return $res;
             }
             //
             return array('success' => true, 'data' => null);
@@ -406,7 +413,7 @@ class Duckietown {
         // get user identities associated to the given UID
         $identities = [
             'user_storage_permission' => [],
-            'group_storage_permission' => []
+            'group_storage_permission' => [self::ANYBODY_GROUP]
         ];
         $db = new Database('duckietown', 'identity');
         if ($db->key_exists($uid)) {
