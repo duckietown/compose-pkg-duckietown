@@ -4,8 +4,6 @@
         "has_permission": {
             "details": "Checks whether the user identified by uid has the permissions to perform the given action on the resource (bucket, object)",
             "access_level": [
-                "user",
-                "supervisor",
                 "administrator"
             ],
             "authentication": [
@@ -137,8 +135,6 @@
         "grant_permission": {
             "details": "Grants new permissions to the user identified by uid or the group identified by gid on the resource (bucket, object)",
             "access_level": [
-                "user",
-                "supervisor",
                 "administrator"
             ],
             "authentication": [
@@ -277,8 +273,6 @@
         "revoke_permission": {
             "details": "Revoke previously granted permissions to the user identified by uid or the group identified by gid on the resource (bucket, object)",
             "access_level": [
-                "user",
-                "supervisor",
                 "administrator"
             ],
             "authentication": [
