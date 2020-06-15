@@ -63,20 +63,17 @@ function base58_decode( text ){
 }//base58_decode
 
 $('#dt-login-confirm').on('click', function(){
-  var token = $('#dt-token-input').val();
+  let token = $('#dt-token-input').val();
   // split the token in three parts
-  parts = token.split('-');
-  if( parts.length != 3 ){
+  let parts = token.split('-');
+  if( parts.length !== 3 ){
     openAlert( 'danger', '[Error DT-1]: The token is not valid' );
     return;
   }
   // get parts
-  version = parts[0];
-  payload_58 = parts[1];
-  signature_58 = parts[2];
+  let payload_58 = parts[1];
   // decode payload and signature
-  payload = base58_decode(payload_58);
-  signature = base58_decode(signature_58);
+  let payload = base58_decode(payload_58);
   // make sure that the payload is complete
   try {
     payload = JSON.parse(payload);
@@ -84,7 +81,7 @@ $('#dt-login-confirm').on('click', function(){
     openAlert( 'danger', '[Error DT-2]: Invalid token format; Invalid payload.' );
     return;
   }
-  if( payload.uid == undefined || payload.exp == undefined ){
+  if( payload.uid === undefined || payload.exp === undefined ){
     // not valid
     openAlert( 'danger', '[Error DT-3]: Invalid token format; Missing fields from payload.' );
     return;
@@ -96,13 +93,14 @@ $('#dt-login-confirm').on('click', function(){
   }//on_login_success_fcn
 
   // call API
-  url = "<?php echo sprintf(
-    '%sweb-api/%s/duckietoken/login_with_duckietoken/json?duckietoken={0}&token=%s',
-    Configuration::$BASE,
-    Configuration::$WEBAPI_VERSION,
-    $_SESSION['TOKEN']) ?>".format(token);
-
-  callAPI( url, true, false, on_login_success_fcn );
+  smartAPI('duckietoken', 'login_with_duckietoken', {
+      'arguments': {
+          'duckietoken': token,
+      },
+      'block': true,
+      'confirm': true,
+      'on_success': on_login_success_fcn
+  });
 });
 
 </script>
