@@ -1,3 +1,7 @@
+## 0.1.6 (June 16, 2020)
+  - Merge branch 'patch-2' into from-0.1.5
+  - fixed renderers Twist2D and WheelsCmd
+
 ## 0.1.5 (January 27, 2020)
   - fixed bug
 
