@@ -168,7 +168,7 @@ function _tab_health_render_logs(){
                                 return label.toFixed(0)+' \'C';
                             },
                             min: 30,
-                            max: 80
+                            max: 90
                         },
                         gridLines: {
                             display: false
