@@ -10,7 +10,7 @@ if (strlen($logs_db_host) < 1) {
 }
 ?>
 
-<form class="form-inline" id="_log_selectors_form">
+<form class="form-inline _logs_rigid_centered_component" id="_log_selectors_form">
 
   <div class="row">
 
@@ -80,8 +80,8 @@ if (strlen($logs_db_host) < 1) {
 function _logs_print_table_structure($id = null, $read_only = true) {
     $id_str = is_null($id)? '' : sprintf('id="%s"', $id);
     ?>
-    <h4>Selected logs:</h4>
-    <table <?php echo $id_str ?> class="_logs_list table table-striped table-condensed text-center">
+    <h4 class="_logs_rigid_centered_component">Selected logs:</h4>
+    <table <?php echo $id_str ?> class="_logs_list _logs_rigid_centered_component table table-striped table-condensed text-center">
         <tr>
           <th style="display:none">_key</th>
           <th style="display:none">_color</th>

@@ -20,39 +20,60 @@ if (strlen($db_app_id) > 0 && strlen($db_app_secret) > 0) {
 }
 ?>
 
-<table style="width:100%; margin-bottom:10px">
+<table class="_logs_rigid_centered_component" style="margin-bottom:10px;">
     <tr style="border-bottom:1px solid #ddd; ">
-      <td style="width:100%">
-        <h2>Diagnostics</h2>
-      </td>
+        <td style="width:100%">
+            <h2>
+                Diagnostics
+            
+                <span style="float: right; font-size: 12pt">Wide mode
+                  <label for="_logs_wide_mode"></label>
+                    <input type="checkbox"
+                           data-toggle="toggle"
+                           data-onstyle="primary"
+                           data-offstyle="default"
+                           data-class="fast"
+                           data-size="small"
+                           name="_logs_wide_mode"
+                           id="_logs_wide_mode"/>
+                </span>
+            </h2>
+
+        </td>
     </tr>
     <tr>
-      <td style="width: 100%; padding-top: 6px; height: 40px">
-        <div class="_logs_progress_bar progress" style="height: 12px; display: none">
-          <div class="_logs_progress_bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-          </div>
-        </div>
-      </td>
+        <td style="width: 100%; padding-top: 6px; height: 40px">
+            <div class="_logs_progress_bar progress" style="height: 12px; display: none">
+                <div class="_logs_progress_bar progress-bar" role="progressbar" aria-valuenow="0"
+                     aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+        </td>
     </tr>
 </table>
 
 <style type="text/css">
-#_log_selectors_form .row ._selector:nth-child(2){
-    padding-left: 15px;
-}
-
-#_log_selectors_form .row ._selector{
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
-._logs_list{
-    font-size: 13px;
-}
-
-#_logs_tab_btns li > a{
-    color: #555;
-}
+    #_log_selectors_form .row ._selector:nth-child(2){
+        padding-left: 15px;
+    }
+    
+    #_log_selectors_form .row ._selector{
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    ._logs_list{
+        font-size: 13px;
+    }
+    
+    #_logs_tab_btns li > a{
+        color: #555;
+    }
+    
+    ._logs_rigid_centered_component {
+        width: 970px;
+        margin: auto;
+    }
 </style>
 
 <?php
@@ -98,7 +119,7 @@ $tabs = [
 
 
 <!-- Nav tabs -->
-<ul class="nav nav-tabs" id="_logs_tab_btns" role="tablist">
+<ul class="nav nav-tabs _logs_rigid_centered_component" id="_logs_tab_btns" role="tablist">
     <?php
     foreach ($tabs as $tab_id => $tab) {
         ?>
@@ -135,7 +156,23 @@ window._DIAGNOSTICS_LOGS_DURATION = 0;
 window._DIAGNOSTICS_LOGS_X_RESOLUTION = 1;
 window._DIAGNOSTICS_LOGS_X_RANGE = [];
 window._DIAGNOSTICS_LOGS_WIDTH = '100%';
-window._DIAGNOSTICS_LOGS_HEIGHT = '240px';
+window._DIAGNOSTICS_LOGS_HEIGHT = '280px';
+window._DIAGNOSTICS_LOGS_BG_ALPHA = 0.1;
+
+$('#_logs_wide_mode').change(function(){
+    if ($(this).prop('checked')){
+        window._DIAGNOSTICS_LOGS_WIDTH = '100%';
+        window._DIAGNOSTICS_LOGS_HEIGHT = '400px';
+        window._DIAGNOSTICS_LOGS_BG_ALPHA = 0.4;
+        $('body > #page_container').css('min-width', '100%');
+    }else{
+        window._DIAGNOSTICS_LOGS_WIDTH = '100%';
+        window._DIAGNOSTICS_LOGS_HEIGHT = '280px';
+        window._DIAGNOSTICS_LOGS_BG_ALPHA = 0.1;
+        $('body > #page_container').css('min-width', '970px');
+    }
+    refresh_current_tab();
+  });
 
 function get_empty_canvas(width, height){
     let _w = width || window._DIAGNOSTICS_LOGS_WIDTH;
@@ -144,7 +181,7 @@ function get_empty_canvas(width, height){
 }
 
 function get_chart_dataset(opts){
-    let bg_alpha = opts['background_alpha'] || 0.1;
+    let bg_alpha = opts['background_alpha'] || window._DIAGNOSTICS_LOGS_BG_ALPHA;
     let gradient = $('<canvas/>').get(0).getContext('2d').createLinearGradient(0, 0, 0, 600);
     gradient.addColorStop(0, "rgba({0}, {1})".format(opts['color'], bg_alpha));
     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");

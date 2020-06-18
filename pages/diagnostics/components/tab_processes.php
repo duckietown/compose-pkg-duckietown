@@ -57,7 +57,7 @@ $_leaves_only = True;
 </style>
 
 
-<div class="panel panel-default">
+<div class="panel panel-default _logs_rigid_centered_component">
     <div class="panel-heading">Filter</div>
     <div class="panel-body">
         <form id="_logs_tab_processes_filter_form">
