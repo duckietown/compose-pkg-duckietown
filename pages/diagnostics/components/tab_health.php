@@ -7,6 +7,7 @@ Keys used from Log:
     health:
         status
         temp
+        frequency
         volts
             sdram_i
             core
@@ -27,6 +28,10 @@ Keys used from Log:
     <div id="_logs_tab_health_cpu_temp">
     </div>
     <br/><br/>
+    <h4>CPU Frequency (GHz)</h4>
+    <div id="_logs_tab_health_cpu_frequency">
+    </div>
+    <br/><br/>
     <h4>CPU Voltage (V)</h4>
     <div id="_logs_tab_health_cpu_voltage">
     </div>
@@ -42,6 +47,7 @@ Keys used from Log:
 function _tab_health_render_logs(){
     let status_datasets = [];
     let cpu_temp_datasets = [];
+    let cpu_freq_datasets = [];
     let cpu_volt_datasets = [];
     let ram_volt_datasets = [];
     let seek = '/health';
@@ -57,6 +63,7 @@ function _tab_health_render_logs(){
             window._DIAGNOSTICS_LOGS_DATA[key]['/general'].subgroup
         );
         // create datasets
+        // Overall status
         let status = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
             y: status_to_val[e.status]
@@ -77,6 +84,7 @@ function _tab_health_render_logs(){
             color: color,
             _txt: status_txt
         }));
+        // CPU temperature
         let cpu_temp = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
             y: parseFloat(e.temp.slice(0,-2))
@@ -86,6 +94,27 @@ function _tab_health_render_logs(){
             data: cpu_temp,
             color: color
         }));
+        // CPU frequency
+        let cpu_frequency = log_data.map(function(e){
+            // this is necessary, old logs do not have the frequency
+            if (e.hasOwnProperty('frequency')) {
+                return {
+                    x: parseInt(e.time - start_time),
+                    y: (parseFloat(e.frequency) / (10 ** 9)).toFixed(4)
+                };
+            } else {
+                return {
+                    x: parseInt(e.time - start_time),
+                    y: 0.0
+                };
+            }
+        });
+        cpu_freq_datasets.push(get_chart_dataset({
+            label: log_legend_entry,
+            data: cpu_frequency,
+            color: color
+        }));
+        // CPU voltage
         let cpu_volt = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
             y: parseFloat(e.volts.core.slice(0,-1))
@@ -95,6 +124,7 @@ function _tab_health_render_logs(){
             data: cpu_volt,
             color: color
         }));
+        // RAM voltage
         let ram_volt = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
             y: parseFloat(e.volts.sdram_i.slice(0,-1))
@@ -109,7 +139,7 @@ function _tab_health_render_logs(){
     // add device status canvas to tab
     let status_canvas = get_empty_canvas();
     $('#_logs_tab_health #_logs_tab_health_status').append(status_canvas);
-    // render CPU usage
+    // render Overall status
     new Chart(status_canvas, {
         type: 'line',
         data: {
@@ -152,7 +182,7 @@ function _tab_health_render_logs(){
     // add CPU temp canvas to tab
     let temp_canvas = get_empty_canvas();
     $('#_logs_tab_health #_logs_tab_health_cpu_temp').append(temp_canvas);
-    // render CPU usage
+    // render CPU temperature
     new Chart(temp_canvas, {
         type: 'line',
         data: {
@@ -169,6 +199,43 @@ function _tab_health_render_logs(){
                             },
                             min: 30,
                             max: 90
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }
+                ],
+                xAxes: [
+                    {
+                        ticks: {
+                            callback: format_time
+                        }
+                    }
+                ]
+            }
+        }
+    });
+    // add CPU frquency canvas to tab
+    let cpu_freq_canvas = get_empty_canvas();
+    $('#_logs_tab_health #_logs_tab_health_cpu_frequency').append(cpu_freq_canvas);
+    // render CPU frequency
+    new Chart(cpu_freq_canvas, {
+        type: 'line',
+        data: {
+            labels: window._DIAGNOSTICS_LOGS_X_RANGE,
+            datasets: cpu_freq_datasets
+        },
+        options: {
+            scales: {
+                yAxes: [
+                    {
+                        ticks: {
+                            callback: function(label) {
+                                return label.toFixed(2)+' GHz';
+                            },
+                            min: 0.0,
+                            max: 2.0,
+                            stepSize: 0.4
                         },
                         gridLines: {
                             display: false
@@ -269,6 +336,7 @@ let _tab_health_on_show = function(){
 let _tab_health_on_hide = function(){
     $('#_logs_tab_health #_logs_tab_health_status').empty();
     $('#_logs_tab_health #_logs_tab_health_cpu_temp').empty();
+    $('#_logs_tab_health #_logs_tab_health_cpu_frequency').empty();
     $('#_logs_tab_health #_logs_tab_health_cpu_voltage').empty();
     $('#_logs_tab_health #_logs_tab_health_ram_voltage').empty();
 };
