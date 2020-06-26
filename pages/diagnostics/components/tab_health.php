@@ -87,7 +87,8 @@ function _tab_health_render_logs(){
         // CPU temperature
         let cpu_temp = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
-            y: parseFloat(e.temp.slice(0,-2))
+            y: ($.type(e.temp) === "string")?
+                parseFloat(e.temp.slice(0,-2)) : e.temp
         }});
         cpu_temp_datasets.push(get_chart_dataset({
             label: log_legend_entry,
@@ -100,7 +101,9 @@ function _tab_health_render_logs(){
             if (e.hasOwnProperty('frequency')) {
                 return {
                     x: parseInt(e.time - start_time),
-                    y: (parseFloat(e.frequency) / (10 ** 9)).toFixed(4)
+                    y: ($.type(e.frequency) === "string")?
+                        (parseFloat(e.frequency) / (10 ** 9)).toFixed(4) :
+                        (e.frequency / (10 ** 9)).toFixed(4)
                 };
             } else {
                 return {
@@ -117,7 +120,8 @@ function _tab_health_render_logs(){
         // CPU voltage
         let cpu_volt = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
-            y: parseFloat(e.volts.core.slice(0,-1))
+            y: ($.type(e.volts.core) === "string")?
+                parseFloat(e.volts.core.slice(0,-1)) : e.volts.core
         }});
         cpu_volt_datasets.push(get_chart_dataset({
             label: log_legend_entry,
@@ -127,7 +131,8 @@ function _tab_health_render_logs(){
         // RAM voltage
         let ram_volt = log_data.map(function(e){return {
             x: parseInt(e.time - start_time),
-            y: parseFloat(e.volts.sdram_i.slice(0,-1))
+            y: ($.type(e.volts.sdram_i) === "string")?
+                parseFloat(e.volts.sdram_i.slice(0,-1)) : e.volts.sdram_i
         }});
         ram_volt_datasets.push(get_chart_dataset({
             label: log_legend_entry,
@@ -231,7 +236,7 @@ function _tab_health_render_logs(){
                     {
                         ticks: {
                             callback: function(label) {
-                                return label.toFixed(2)+' GHz';
+                                return label.toFixed(1)+' GHz';
                             },
                             min: 0.0,
                             max: 2.0,
