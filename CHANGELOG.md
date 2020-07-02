@@ -1,3 +1,61 @@
+## 1.0.0-rc (July 02, 2020)
+  - added library vis.js
+  - added support for non-string health properties in diagnostics page
+  - added WT19B robot image
+  - renamed thumbnails image for robots
+  - diagnostics: added CPU frequency plot
+  - added wide-mode switch to diagnostics page
+  - increased max temp to 90'C in diagnostics tab
+  - Merge branch 'fix-mission-control'
+  - added automatic creation of the group "Anybody in Duckietown".
+  - fixed Twist2D and WheelsCmd block renderers
+  - only administrator can now grant and revoke storage permissions
+  - format login module
+  - improved cloud_storage page
+  - added cloud_storage page
+  - implemented duckietown storage permissions back-end
+  - uid and gid in API service duckietown_storage are now nullable
+  - added storage permission management implementation in Duckietown.php
+  - added duckietown_storage API
+  - minor
+  - moved tile images
+  - removed old robot types thumbnails
+  - added robot types thumbnails
+  - renamed page setup-token -> onboarding
+  - added download button for logs in diagnostics page
+  - added download script for diagnostics logs
+  - removed unused code
+  - minor
+  - updated plots legend to show Group and Subgroup in Diagnostics page
+  - fixed bug in colors non updating when a log is removed
+  - renamed Type -> Subgroup
+  - added duckiebot, watchtower, greenstation images
+  - added swap plot to resources tab
+  - minor
+  - improved diagnostics tabs
+  - Merge remote-tracking branch 'origin/master'
+  - minor
+  - improved diagnostics tabs
+  - fixed bug
+  - Merge branch 'bug-fix'
+  - pcpu, pmem, and nthreads plots are now merged in processes tab
+  - improved diagnostics tabs
+  - improved diagnostics tables
+  - diagnostics: improved tabs; added progress bar; added external host
+  - added configuration to package
+  - improved diagnostics tabs
+  - implemented health tab; implemented queue of Ajax jobs
+  - improved diagnostics tabs
+  - refactoring
+  - refactoring
+  - implemented diagnostics/tab:system
+  - clean up Duckietown.php
+  - added diagnostics page
+  - Cleaned up Duckietown.php
+  - Merge branch 'master' of github.com:afdaniele/compose-pkg-duckietown
+  - minor
+  - devel
+
 ## 0.1.5 (January 27, 2020)
   - fixed bug
 
