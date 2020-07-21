@@ -3,10 +3,10 @@ use \system\classes\Core;
 
 $LOGS_VERSION = "v1";
 
-$logs_db_host = Core::getSetting('logs_db_host', 'duckietown');
-$logs_db_name = Core::getSetting('logs_db_name', 'duckietown');
-$db_app_id = Core::getSetting('db_app_id', 'duckietown');
-$db_app_secret = Core::getSetting('db_app_secret', 'duckietown');
+$logs_db_host = Core::getSetting('diagnostics/database_host', 'duckietown');
+$logs_db_name = Core::getSetting('diagnostics/database_name', 'duckietown');
+$db_app_id = Core::getSetting('diagnostics/app_id', 'duckietown');
+$db_app_secret = Core::getSetting('diagnostics/app_secret', 'duckietown');
 
 $api_info = [];
 if (strlen($logs_db_host) > 0) {
@@ -20,37 +20,30 @@ if (strlen($db_app_id) > 0 && strlen($db_app_secret) > 0) {
 }
 ?>
 
-<table class="_logs_rigid_centered_component" style="margin-bottom:10px;">
-    <tr style="border-bottom:1px solid #ddd; ">
-        <td style="width:100%">
-            <h2>
-                Diagnostics
-            
-                <span style="float: right; font-size: 12pt">Wide mode
-                  <label for="_logs_wide_mode"></label>
-                    <input type="checkbox"
-                           data-toggle="toggle"
-                           data-onstyle="primary"
-                           data-offstyle="default"
-                           data-class="fast"
-                           data-size="small"
-                           name="_logs_wide_mode"
-                           id="_logs_wide_mode"/>
-                </span>
-            </h2>
+<style type="text/css">
+.page-title {
+    margin-bottom: 10px;
+}
+</style>
 
-        </td>
-    </tr>
-    <tr>
-        <td style="width: 100%; padding-top: 6px; height: 40px">
-            <div class="_logs_progress_bar progress" style="height: 12px; display: none">
-                <div class="_logs_progress_bar progress-bar" role="progressbar" aria-valuenow="0"
-                     aria-valuemin="0" aria-valuemax="100">
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="col-md-12" style="margin-bottom: 30px;">
+    <div style="width: 970px; margin: auto">
+        <h2 class="page-title"></h2>
+    
+        <span style="float: right; font-size: 12pt">
+            Wide mode
+            <label for="_logs_wide_mode"></label>
+            <input type="checkbox"
+                data-toggle="toggle"
+                data-onstyle="primary"
+                data-offstyle="default"
+                data-class="fast"
+                data-size="small"
+                name="_logs_wide_mode"
+                id="_logs_wide_mode"/>
+        </span>
+    </div>
+</div>
 
 <style type="text/css">
     #_log_selectors_form .row ._selector:nth-child(2){
@@ -151,7 +144,6 @@ $tabs = [
 <script type="text/javascript">
 window._DIAGNOSTICS_LOGS_KEYS = [];
 window._DIAGNOSTICS_LOGS_DATA = {};
-window._DIAGNOSTICS_LOADING_PROGRESS = 0;
 window._DIAGNOSTICS_LOGS_DURATION = 0;
 window._DIAGNOSTICS_LOGS_X_RESOLUTION = 1;
 window._DIAGNOSTICS_LOGS_X_RANGE = [];
@@ -164,12 +156,12 @@ $('#_logs_wide_mode').change(function(){
         window._DIAGNOSTICS_LOGS_WIDTH = '100%';
         window._DIAGNOSTICS_LOGS_HEIGHT = '400px';
         window._DIAGNOSTICS_LOGS_BG_ALPHA = 0.4;
-        $('body > #page_container').css('min-width', '100%');
+        $('#page_container').css('min-width', '100%');
     }else{
         window._DIAGNOSTICS_LOGS_WIDTH = '100%';
         window._DIAGNOSTICS_LOGS_HEIGHT = '280px';
         window._DIAGNOSTICS_LOGS_BG_ALPHA = 0.1;
-        $('body > #page_container').css('min-width', '970px');
+        $('#page_container').css('min-width', '970px');
     }
     refresh_current_tab();
   });
@@ -210,26 +202,4 @@ function format_time(secs){
         parts.push('{0}s'.format(secs % 60));
     return parts.join(' ');
 }
-
-function _update_progress_bar(){
-    let perc = window._DIAGNOSTICS_LOADING_PROGRESS;
-    let pbar = $('._logs_progress_bar.progress');
-    let pbar_progress = $('._logs_progress_bar.progress-bar');
-    if (perc <= 0 && pbar.css('display') === 'none') return;
-    pbar.css('display', 'block');
-    perc = Math.max(0, Math.min(100, perc));
-    pbar_progress.css('width', '{0}%'.format(perc));
-    if (perc >= 100) {
-        setTimeout(function(){
-            if (window._DIAGNOSTICS_LOADING_PROGRESS >= 100) {
-                window._DIAGNOSTICS_LOADING_PROGRESS = 0;
-                pbar.css('display', 'none');
-            }
-        }, 1000);
-    }
-}
-
-$(document).on('ready', function(){
-    setInterval(_update_progress_bar, 500);
-});
 </script>

@@ -7,7 +7,7 @@ use \system\classes\Core;
 use \system\classes\Configuration;
 use \system\packages\duckietown\Duckietown;
 
-require_once $GLOBALS['__SYSTEM__DIR__'] . 'templates/modals/SmartForm.php';
+require_once $GLOBALS['__SYSTEM__DIR__'] . 'templates/modals/SmartFormModal.php';
 
 // get all buckets and actions
 $_all_buckets = Duckietown::STORAGE_BUCKETS;
@@ -113,31 +113,29 @@ $form_schema = [
         ]
     ]
 ];
-$form = new SmartForm($form_schema);
+$form = new SmartFormModal($form_schema);
 ?>
 
-<h2 class="page-title">
-    Cloud Storage
-    <?php
-    if ($_is_admin) {
-        ?>
-        <button
-            class="btn btn-warning"
-            type="button"
-            data-toggle="tooltip dialog"
-            data-placement="bottom"
-            data-original-title="Grant new permissions"
-            data-modal-mode="insert"
-            data-modal-title="Grant new Cloud Storage permissions"
-            data-target="#<?php echo $form->modalID ?>"
-            style="float: right">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-            &nbsp;Grant permission
-        </button>
-        <?php
-    }
+<h2 class="page-title"></h2>
+<?php
+if ($_is_admin) {
     ?>
-</h2>
+    <button
+        class="btn btn-warning btn-sm"
+        type="button"
+        data-toggle="tooltip dialog"
+        data-placement="bottom"
+        data-original-title="Grant new permissions"
+        data-modal-mode="insert"
+        data-modal-title="Grant new Cloud Storage permissions"
+        data-target="#<?php echo $form->modalID ?>"
+        style="float: right">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        &nbsp;Grant permission
+    </button>
+    <?php
+}
+?>
 
 <p>
     This page lets you manage access to the Duckietown Storage Space.

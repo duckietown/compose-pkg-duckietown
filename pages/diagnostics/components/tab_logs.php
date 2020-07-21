@@ -2,8 +2,8 @@
 use \system\classes\Core;
 use \system\classes\Configuration;
 
-$logs_db_host = Core::getSetting('logs_db_host', 'duckietown');
-$logs_db_name = Core::getSetting('logs_db_name', 'duckietown');
+$logs_db_host = Core::getSetting('diagnostics/database_host', 'duckietown');
+$logs_db_name = Core::getSetting('diagnostics/database_name', 'duckietown');
 
 if (strlen($logs_db_host) < 1) {
     $logs_db_host = Configuration::$BASE;
@@ -354,12 +354,12 @@ function fetch_log_data(seeks, on_step, on_success){
     if (total <= 0){
         return;
     }
-    window._DIAGNOSTICS_LOADING_PROGRESS = 1;
+    ProgressBar.set(1);
     // define task function
     let _fetch = function(queue){
         // base case, nothing left in the queue
         if (queue.length === 0){
-            window._DIAGNOSTICS_LOADING_PROGRESS = 100;
+            ProgressBar.set(100);
             return _on_success_fcn();
         }
         // get next element from queue
@@ -371,7 +371,7 @@ function fetch_log_data(seeks, on_step, on_success){
             let i = total - queue.length;
             _on_step_fcn(job.key, job.seek, i, total);
             // update progress bar
-            window._DIAGNOSTICS_LOADING_PROGRESS = _pbar_next(queue);
+            ProgressBar.set(_pbar_next(queue));
             // move to the next job
             return _fetch(queue);
         }
@@ -394,7 +394,7 @@ function fetch_log_data(seeks, on_step, on_success){
                 let i = total - queue.length;
                 _on_step_fcn(job.key, job.seek, i, total);
                 // update progress bar
-                window._DIAGNOSTICS_LOADING_PROGRESS = _pbar_next(queue);
+                ProgressBar.set(_pbar_next(queue));
                 // move to the next job
                 return _fetch(queue);
             }
@@ -417,7 +417,7 @@ function _update_duration(){
 }
 
 $(document).on('ready', function(){
-    window._DIAGNOSTICS_LOADING_PROGRESS = 1;
+    ProgressBar.set(1);
     // get extra info
     let api_info = JSON.parse('<?php echo json_encode($api_info) ?>');
     // fetch list of keys
@@ -448,7 +448,7 @@ $(document).on('ready', function(){
             // populate table
             _populate_table(keys);
             // update progress bar
-            window._DIAGNOSTICS_LOADING_PROGRESS = 100;
+            ProgressBar.set(100);
         }
     });
 });

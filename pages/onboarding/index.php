@@ -18,7 +18,7 @@ if (!is_null($res)) {
         charset="utf-8"></script>
 
 
-<h2 class="page-title">Onboarding</h2>
+<h2 class="page-title"></h2>
 
 <p>
     Welcome to the Duckietown <strong>onboarding</strong> page!
@@ -27,8 +27,10 @@ if (!is_null($res)) {
 </p>
 <br/>
 
-Your personal token can be found at <a href="https://www.duckietown.org/site/your-token"
-                                       target="_blank">https://www.duckietown.org/site/your-token</a>.
+Your personal token can be found at
+<a href="https://www.duckietown.org/site/your-token" target="_blank">
+    https://www.duckietown.org/site/your-token
+</a>.
 
 <div class="input-group" style="margin:10px 0 40px 0">
     <span class="input-group-addon" id="dt-token">Your Token</span>
