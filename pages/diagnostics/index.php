@@ -3,7 +3,7 @@ use \system\classes\Core;
 
 $LOGS_VERSION = "v1";
 
-$logs_db_host = Core::getSetting('diagnostics/database_host', 'duckietown');
+$logs_db_host = Core::getSetting('diagnostics/database_hostname', 'duckietown');
 $logs_db_name = Core::getSetting('diagnostics/database_name', 'duckietown');
 $db_app_id = Core::getSetting('diagnostics/app_id', 'duckietown');
 $db_app_secret = Core::getSetting('diagnostics/app_secret', 'duckietown');
