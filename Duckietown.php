@@ -24,7 +24,6 @@ class Duckietown {
     private static $user_id = null;
     private static $user_token = null;
     
-    
     private static $CANDIDATE_PAGE = 'onboarding';
     
     const STORAGE_BUCKETS = [
@@ -126,6 +125,9 @@ class Duckietown {
     
     const ANYBODY_GROUP = 'Anybody in Duckietown';
     
+    private static $WP_API_HOSTNAME = 'www.duckietown.org';
+    private static $WP_API_URL = 'https://%s/wp-json/wp/v2/%s';
+
     
     // disable the constructor
     private function __construct() {
@@ -175,7 +177,7 @@ class Duckietown {
                     Core::redirectTo(self::$CANDIDATE_PAGE);
                 }
             }
-            // create the "everybody" group if not present
+            // create the "anybody in Duckietown" group if not present
             if (!Core::groupExists(self::ANYBODY_GROUP)) {
                 $res = Core::createUserGroup(self::ANYBODY_GROUP, self::ANYBODY_GROUP);
                 if (!$res['success']) return $res;
@@ -350,16 +352,6 @@ class Duckietown {
         // ---
         $duckietown_user_id = $res['data']['uid'];
         $userid = sprintf('duckietown_user_%s', $duckietown_user_id);
-        // create user descriptor
-        $user_info = [
-            "username" => $userid,
-            "name" => sprintf('Duckietown User #%s', $duckietown_user_id),
-            "email" => '',
-            "picture" => 'images/default_user.png',
-            "role" => "user",
-            "active" => true,
-            "pkg_role" => []
-        ];
         // look for a pre-existing user profile
         $user_exists = Core::userExists($userid);
         if ($user_exists) {
@@ -370,6 +362,32 @@ class Duckietown {
             }
             $user_info = $res['data']->asArray();
         } else {
+            // create default user descriptor
+            $user_info = [
+                "username" => $userid,
+                "name" => sprintf('Duckietown User #%s', $duckietown_user_id),
+                "email" => '',
+                "picture" => 'images/default_user.png',
+                "role" => "user",
+                "active" => true,
+                "pkg_role" => []
+            ];
+            // (try to) fetch user info
+            $res = self::fetchUserInfo($duckietown_user_id);
+            // update with remote info (if available)
+            if ($res['success']) {
+                $user_info = array_merge($user_info, $res['data']);
+            } else {
+                // just notify the user
+                Core::requestAlert(
+                    'WARNING',
+                    sprintf('WARNING: %s<br/><br/>', $res['data']) .
+                    'This is common when the device your dashboard runs on has an unstable ' .
+                    'or no internet connection. This is just a warning, the functionalities ' .
+                    'of the dashboard will not be affected.'
+                );
+            }
+            // create new user account
             $res = Core::createNewUserAccount($userid, $user_info);
             if (!$res['success']) {
                 return $res;
@@ -380,7 +398,7 @@ class Duckietown {
             return [
                 'success' => false,
                 'data' => 'The user profile you are trying to login with is not active. ' .
-                    'Please, contact the administrator'
+                    'Please, contact the administrator.'
             ];
         }
         // update duckietown token for the current user
@@ -613,6 +631,52 @@ class Duckietown {
         // commit changes
         return $db->write($key, $data);
     }//revokeStorageSpacePermissionToUser
+    
+    
+    private static function fetchUserInfo($dt_user_id) {
+        $wp_user_url = sprintf(
+            self::$WP_API_URL, self::$WP_API_HOSTNAME, sprintf('users/%s', $dt_user_id)
+        );
+        // setup a cURL session
+        $ch=curl_init();
+        curl_setopt($ch, CURLOPT_URL, $wp_user_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        // perform cURL
+        $res = curl_exec($ch);
+        curl_close($ch);
+        // check if we got nothing
+        if ($res === false) {
+            $ch_info = curl_getinfo($ch);
+            return [
+                'success' => false,
+                'data' => sprintf('The WP server returned the code %s', $ch_info['http_code'])
+            ];
+        }
+        // it looks like we got something, let's see if it makes any sense
+        $wp_info = json_decode(file_get_contents($wp_user_url), true);
+        if ($wp_info === false) {
+            return [
+                'success' => false,
+                'data' => sprintf('An error occurred while fetching the user data from ' .
+                    'the WP API on %s. Response cannot be parsed.', self::$WP_API_HOSTNAME)
+            ];
+        }
+        // make sure the response contains what we need
+        if (!array_key_exists('name', $wp_info) or !array_key_exists('avatar_urls', $wp_info)) {
+            return ['success' => false, 'data' => 'Response from WP API cannot be parsed.'];
+        }
+        // create user descriptor
+        return [
+            'success' => true,
+            'data' => [
+                "name" => $wp_info['name'],
+                "picture" => $wp_info['avatar_urls']['96']
+            ]
+        ];
+    }//fetchUserInfo
+    
     
 }//Duckietown
 
