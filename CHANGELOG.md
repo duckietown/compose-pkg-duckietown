@@ -1,3 +1,9 @@
+## 1.0.1 (August 11, 2020)
+  - added favicon
+  - implemented communication with WordPress API to fetch user info
+  - moved pages and front-end stuff to duckietown-dashboard package
+  - removed old modules
+
 ## 1.0.0 (July 23, 2020)
   - fixed bug
   - minor
