@@ -377,15 +377,6 @@ class Duckietown {
             // update with remote info (if available)
             if ($res['success']) {
                 $user_info = array_merge($user_info, $res['data']);
-            } else {
-                // just notify the user
-                Core::requestAlert(
-                    'WARNING',
-                    sprintf('WARNING: %s<br/><br/>', $res['data']) .
-                    'This is common when the device your dashboard runs on has an unstable ' .
-                    'or no internet connection. This is just a warning, the functionalities ' .
-                    'of the dashboard will not be affected.'
-                );
             }
             // create new user account
             $res = Core::createNewUserAccount($userid, $user_info);
@@ -637,12 +628,20 @@ class Duckietown {
         $wp_user_url = sprintf(
             self::$WP_API_URL, self::$WP_API_HOSTNAME, sprintf('users/%s', $dt_user_id)
         );
+        // get autentication token
+        $auth_token = Core::getSetting('wordpress_api/token', 'duckietown', null);
+        if (is_null($auth_token) || strlen(trim($auth_token)) <= 0) {
+            return ['success' => false, 'data' => 'WP API Token is not set'];
+        }
         // setup a cURL session
         $ch=curl_init();
         curl_setopt($ch, CURLOPT_URL, $wp_user_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            sprintf('Authorization: Basic %s', $auth_token)
+        ]);
         // perform cURL
         $res = curl_exec($ch);
         curl_close($ch);
@@ -655,7 +654,7 @@ class Duckietown {
             ];
         }
         // it looks like we got something, let's see if it makes any sense
-        $wp_info = json_decode(file_get_contents($wp_user_url), true);
+        $wp_info = json_decode($res, true);
         if ($wp_info === false) {
             return [
                 'success' => false,
