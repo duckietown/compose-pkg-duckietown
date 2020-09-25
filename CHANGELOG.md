@@ -1,3 +1,7 @@
+## 1.0.2 (September 24, 2020)
+  - moved `desktop` page to duckietown_duckiebot package
+  - fixed integration with WordPress API
+
 ## 1.0.1 (August 11, 2020)
   - added favicon
   - implemented communication with WordPress API to fetch user info
