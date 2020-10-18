@@ -1,3 +1,6 @@
+## 1.0.3 (October 18, 2020)
+  - moved stuff relative to DCSS to a separate package
+
 ## 1.0.2 (September 24, 2020)
   - moved `desktop` page to duckietown_duckiebot package
   - fixed integration with WordPress API
