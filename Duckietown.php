@@ -6,6 +6,7 @@
 
 namespace system\packages\duckietown;
 
+use Exception;
 use \system\classes\Core;
 use \system\classes\Configuration;
 use \system\classes\Database;
@@ -293,7 +294,7 @@ class Duckietown {
         // (try to) set login system
         try {
             Core::setLoginSystem('DUCKIETOWN_TOKEN');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
         // set login variables
         $_SESSION['USER_LOGGED'] = true;

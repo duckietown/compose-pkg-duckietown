@@ -5,10 +5,7 @@
         "system-packages": [
             "python3"
         ],
-        "packages": [
-            "ros",
-            "portainer"
-        ]
+        "packages": []
     },
     "compatibility": {
         "compose": {
