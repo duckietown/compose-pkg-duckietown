@@ -1,3 +1,6 @@
+## 1.0.4 (October 18, 2020)
+  - removed dependency on ROS package, moved to package `duckietown_ros` instead. cleaned up old images for duckietown editor. cleaned up README.md.
+
 ## 1.0.3 (October 18, 2020)
   - moved stuff relative to DCSS to a separate package
 
