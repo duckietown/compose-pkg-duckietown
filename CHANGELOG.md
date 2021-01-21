@@ -1,3 +1,11 @@
+## 1.1.0 (January 21, 2021)
+  - bumped compose dependency version
+  - added DB21M robot image
+  - added trimetric renderings for robots
+  - renamed DB21 -> DB21M
+  - added thumbnail for DB21
+  - fixed robot thumbnail image
+
 ## 1.0.4 (October 18, 2020)
   - removed dependency on ROS package, moved to package `duckietown_ros` instead. cleaned up old images for duckietown editor. cleaned up README.md.
 
