@@ -1,3 +1,6 @@
+## 1.1.2 (July 11, 2021)
+  - fixed bug
+
 ## 1.1.1 (July 11, 2021)
   - bumped min compose version to v1.1.7
   - now allowing user candidates to visit Core-only pages
