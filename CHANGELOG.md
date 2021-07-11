@@ -1,3 +1,8 @@
+## 1.1.1 (July 11, 2021)
+  - bumped min compose version to v1.1.7
+  - now allowing user candidates to visit Core-only pages
+  - added more robot images
+
 ## 1.1.0 (January 21, 2021)
   - bumped compose dependency version
   - added DB21M robot image
