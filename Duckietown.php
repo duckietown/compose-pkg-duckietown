@@ -73,9 +73,10 @@ class Duckietown {
                         Core::setUserRole('user', 'duckietown');
                     }
                 }
-                // redirect to the welcome page (token setup)
+                // redirect to the onboarding page (token setup)
+                $allowed_pages = array_merge(Core::RESERVED_PAGES, ['onboarding']);
                 if (Core::getUserRole('duckietown') == 'candidate' &&
-                    Configuration::$PAGE != self::$CANDIDATE_PAGE) {
+                    !array_key_exists(Configuration::$PAGE, $allowed_pages)) {
                     Core::redirectTo(self::$CANDIDATE_PAGE);
                 }
             }
