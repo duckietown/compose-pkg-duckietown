@@ -76,7 +76,7 @@ class Duckietown {
                 // redirect to the onboarding page (token setup)
                 $allowed_pages = array_merge(Core::RESERVED_PAGES, ['onboarding']);
                 if (Core::getUserRole('duckietown') == 'candidate' &&
-                    !array_key_exists(Configuration::$PAGE, $allowed_pages)) {
+                    !in_array(Configuration::$PAGE, $allowed_pages)) {
                     Core::redirectTo(self::$CANDIDATE_PAGE);
                 }
             }
