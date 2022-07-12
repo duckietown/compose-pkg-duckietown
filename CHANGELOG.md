@@ -1,3 +1,6 @@
+## 1.1.5 (July 12, 2022)
+  - provided tokens are now stores it in the robot's `secrets` directory
+
 ## 1.1.4 (July 11, 2022)
   - added Duckietown setup tab
 
