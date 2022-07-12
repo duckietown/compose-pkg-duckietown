@@ -29,6 +29,7 @@ class Duckietown {
     private static $WP_API_HOSTNAME = 'www.duckietown.org';
     private static $WP_API_URL = 'https://%s/wp-json/wp/v2/%s';
 
+    private static $SECRET_DT1_FILE = "/secrets/tokens/dt1";
     
     // disable the constructor
     private function __construct() {
@@ -163,6 +164,10 @@ class Duckietown {
         );
         if (!$res['success']) {
             return $res;
+        }
+        // store to /secret/tokens/dt1 if the file is not there
+        if (!file_exists(self::$SECRET_DT1_FILE)) {
+            file_put_contents(self::$SECRET_DT1_FILE, $duckietoken);
         }
         // ---
         return ['success' => True, 'data' => null];
