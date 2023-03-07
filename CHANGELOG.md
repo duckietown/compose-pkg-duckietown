@@ -1,3 +1,6 @@
+## 1.1.6 (March 07, 2023)
+  - added images for the DB21J robot
+
 ## 1.1.5 (July 12, 2022)
   - provided tokens are now stores it in the robot's `secrets` directory
 
