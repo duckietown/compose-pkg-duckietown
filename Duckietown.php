@@ -232,7 +232,7 @@ class Duckietown {
      *
      * @param string $duckietoken
      *        Personal Duckietown token, it can be retrieved
-     *        from https://www.duckietown.org/site/your-token;
+     *        from https://hub.duckietown.com/profile/;
      *
      * @return array
      * @retval array

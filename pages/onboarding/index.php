@@ -28,8 +28,8 @@ if (!is_null($res)) {
 <br/>
 
 Your personal token can be found at
-<a href="https://www.duckietown.org/site/your-token" target="_blank">
-    https://www.duckietown.org/site/your-token
+<a href="https://hub.duckietown.com/profile/" target="_blank">
+    https://hub.duckietown.com/profile/
 </a>.
 
 <div class="input-group" style="margin:10px 0 40px 0">
