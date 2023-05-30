@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "details": "Configuration",
+    "_data": {
+        "wordpress_api": {
+            "type": "object",
+            "details": "Duckietown WordPress API configuration",
+            "_data": {
+                "hostname": {
+                    "type": "text",
+                    "details": "Hostname of the WordPress API server",
+                    "default": "duckietown.org"
+                },
+                "token": {
+                    "type": "text",
+                    "details": "Authentication token for the WordPress API",
+                    "default": null,
+                    "nullable": true
+                }
+            },
+            "__form__": {
+                "title": "WordPress API"
+            }
+        }
+    }
+}

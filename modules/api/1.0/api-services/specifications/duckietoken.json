@@ -14,7 +14,7 @@
           "duckietoken" : {
             "type" : "text",
             "length" : null,
-            "details" : "Duckietown token to login with. It can be retrieved at the link https://www.duckietown.org/site/your-token"
+            "details" : "Duckietown token to login with. It can be retrieved at the link https://hub.duckietown.com/profile/"
           }
         },
         "optional" : {}
@@ -36,7 +36,7 @@
           "duckietoken" : {
             "type" : "text",
             "length" : null,
-            "details" : "Duckietown token to associate to the account. It can be retrieved at the link https://www.duckietown.org/site/your-token"
+            "details" : "Duckietown token to associate to the account. It can be retrieved at the link https://hub.duckietown.com/profile/"
           }
         },
         "optional" : {}

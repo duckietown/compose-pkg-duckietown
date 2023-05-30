@@ -1,0 +1,19 @@
+{
+    "name" : "Onboarding",
+    "package" : "duckietown",
+    "menu_entry" : {
+        "order" : 0,
+        "icon" : {
+            "class" : "fa",
+            "name" : "handshake-o"
+        },
+        "responsive" : {
+            "priority" : 35
+        },
+        "exclude_roles" : []
+    },
+    "child_pages" : [],
+    "access_level" : [
+        "duckietown:candidate"
+    ]
+}
