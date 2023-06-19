@@ -1,3 +1,7 @@
+## 1.1.8 (June 19, 2023)
+  - Merge branch 'master' into devel
+  - now using lib-dt-authentication library instead of the hard-coded duplicated token code
+
 ## 1.1.7 (April 07, 2023)
   - updated token URLs to point to the Hub
   - removed permissions step
