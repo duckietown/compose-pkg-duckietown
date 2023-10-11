@@ -1,3 +1,7 @@
+## 1.1.9 (October 11, 2023)
+  - Merge pull request #1 from duckietown/DTSW-3670-hide-token-profile-page
+  - hide dt-token in collapsable on profile page
+
 ## 1.1.8 (June 19, 2023)
   - Merge branch 'master' into devel
   - now using lib-dt-authentication library instead of the hard-coded duplicated token code
