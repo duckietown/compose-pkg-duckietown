@@ -60,7 +60,37 @@ $icon_url = Core::getImageURL('logo_h60.png', 'duckietown');
     Sign in with Duckietown
   </span>
 </button>
-...
+
+<div class="modal fade modal-vertical-centered" id="dt-login-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="border-radius: 8px;">
+      <div class="modal-header" style="background-color: #ffc60f; border-radius: 8px 8px 0 0">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Sign in with Duckietown</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="input-group">
+          <span class="input-group-addon" id="dt-token">Your Token</span>
+          <input type="text" name="username" class="form-control" style="display: none" value="Duckietown Token">
+          <input type="password" name="dt-token" class="form-control" id="dt-token-input" placeholder="Paste your personal token here" aria-describedby="dt-token" style="height:50px">
+        </div>
+
+      </div>
+      <div class="modal-footer" style="background-color: #ffc60f; border-radius: 0 0 8px 8px">
+        <a href="https://hub.duckietown.com/profile/" target="_blank" style="float: left; font-size: 14px; margin-top: 6px">
+          <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+          Get your token
+        </a>
+
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="dt-login-confirm" class="btn btn-primary">Login</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 */
 ?>
 
