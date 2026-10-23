@@ -9,7 +9,49 @@ $icon_url = Core::getImageURL('logo_h60.png', 'duckietown');
 <!-- https://github.com/45678/Base58 -->
 <script type="text/javascript" src="<?php echo Core::getJSscriptURL('base58.js', 'duckietown') ?>" charset="utf-8"></script>
 
+<style type="text/css">
+  .dt-login-inline {
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .dt-login-inline .input-group {
+    margin-bottom: 12px;
+  }
+  .dt-login-inline .dt-login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+</style>
 
+<div class="dt-login-inline">
+  <div class="text-center" style="margin-bottom: 16px;">
+    <img src="<?php echo $icon_url ?>" alt="Duckietown" style="height: 48px;"/>
+  </div>
+
+  <div class="input-group">
+    <span class="input-group-addon" id="dt-token">Your Token</span>
+    <input type="text" name="username" class="form-control" style="display: none" value="Duckietown Token" autocomplete="username">
+    <input type="password" name="dt-token" class="form-control" id="dt-token-input"
+           placeholder="Paste your personal token here" aria-describedby="dt-token" style="height:50px"
+           autocomplete="current-password">
+  </div>
+
+  <div class="dt-login-actions">
+    <a href="https://hub.duckietown.com/profile/" target="_blank" style="font-size: 14px;">
+      <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+      Get your token / Sign up
+    </a>
+    <button type="button" id="dt-login-confirm" class="btn btn-primary">Sign in</button>
+  </div>
+</div>
+
+<?php
+/*
+ * Previous modal-based "Sign in with Duckietown" UI kept for reference.
+ *
 <button type="button" class="login-button">
   <span class="login-button-icon">
     <img src="<?php echo $icon_url ?>"/>
@@ -49,7 +91,8 @@ $icon_url = Core::getImageURL('logo_h60.png', 'duckietown');
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
+*/
+?>
 
 <script type="text/javascript">
 
@@ -62,7 +105,7 @@ function base58_decode( text ){
   return str;
 }//base58_decode
 
-$('#dt-login-confirm').on('click', function(){
+function dt_login_submit(){
   let token = $('#dt-token-input').val();
   // split the token in three parts
   let parts = token.split('-');
@@ -101,6 +144,14 @@ $('#dt-login-confirm').on('click', function(){
       'confirm': true,
       'on_success': on_login_success_fcn
   });
+}
+
+$('#dt-login-confirm').on('click', dt_login_submit);
+$('#dt-token-input').on('keydown', function(e){
+  if (e.key === 'Enter' || e.keyCode === 13) {
+    e.preventDefault();
+    dt_login_submit();
+  }
 });
 
 </script>
